@@ -39,3 +39,49 @@ knitr::kable(str(credit_card))
 ```{r}
 summary(credit_card)
 ```
+
+
+
+```{r Column_names , include=TRUE}
+column_names <- colnames(credit_card)
+last_two_columns <- tail(column_names, 2)
+print(column_names)
+```
+
+
+```{r Dropping_last_two_columns_to_get_final_dataframe , include=TRUE}
+
+credit_card_final <- subset(credit_card,select = !colnames(credit_card) %in% last_two_columns)
+head(credit_card_final,2)
+```
+
+
+```{r summary_on_new_dataframe  , include=TRUE}
+summary(credit_card_final)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
