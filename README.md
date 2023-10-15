@@ -4,16 +4,16 @@ This GitHub repository contains the code and documentation for a comprehensive f
 
 Project Objectives
 
-1. Customer Segmentation: Identify distinct customer segments based on a combination of attributes like age, income category, and credit card category preferences. Tailor marketing and customer engagement strategies to different customer segments.
+ 1. Customer Segmentation: Identify distinct customer segments based on a combination of attributes like age, income category, and credit card category preferences. Tailor marketing and customer engagement strategies to different customer segments.
 
-2. Transaction Behavior: Analyze typical transaction patterns and behaviors of clients in different income categories.
+ 2. Transaction Behavior: Analyze typical transaction patterns and behaviors of clients in different income categories.
 Identify trends and opportunities for targeted product offerings.
 
-3. Credit Utilization Analysis: Explore the relationship between a client's average utilization ratio and their credit limit. Provide recommendations for responsible credit utilization.
+ 3. Credit Utilization Analysis: Explore the relationship between a client's average utilization ratio and their credit limit. Provide recommendations for responsible credit utilization.
 
-4. Determining Factors: Investigate primary drivers of client attrition. Categorize these factors into specific groups such as demographics, credit-related factors, or interaction-related factors.
+ 4. Determining Factors: Investigate primary drivers of client attrition. Categorize these factors into specific groups such as demographics, credit-related factors, or interaction-related factors.
 
-5. Income Category and Churn: Analyze attrition rates among clients in different income categories. Develop strategies to retain clients in lower income categories.
+ 5. Income Category and Churn: Analyze attrition rates among clients in different income categories. Develop strategies to retain clients in lower income categories.
 
 Dataset Source
 
