@@ -60,7 +60,23 @@ head(credit_card_final,2)
 summary(credit_card_final)
 ```
 
+```{r}
+library(ggplot2)
+library(dplyr)
+selected_columns <- credit_card_final %>%  select(Customer_Age, Income_Category, Card_Category)
 
+# Create the heatmap
+heatmap <- ggplot(selected_columns, aes(x = Income_Category, y = Card_Category, fill = Customer_Age)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(title = "Customer Segmentation Heatmap",
+       x = "Income Category",
+       y = "Card Category") +
+  theme_minimal()
+
+# Display the heatmap
+print(heatmap)
+```
 
 
 
