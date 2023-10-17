@@ -133,7 +133,35 @@ histogram_plot <- ggplot(credit_card_final_without_unknown, aes(x = Avg_Utilizat
 print(histogram_plot)
 ```
 
+```{r transaction_behavior(Average utilization ratio and income category) , include=TRUE}
 
+
+library(dplyr)
+library(ggplot2)
+
+# Grouping according to income category and calculating the aggregate of average utilization ratio of each income category in the dataframe
+Income_category_and_average_utilization <- credit_card_final_without_unknown %>% 
+  group_by(Income_Category) %>%
+  summarise(Avg_Utilization_Ratio = mean(Avg_Utilization_Ratio))
+
+# Defining the order of the columns (lowest to highest)
+cols <- c('Less than $40K', '$40K - $60K', '$60K - $80K', '$80K - $120K', '$120K +')
+
+
+plot <- ggplot(Income_category_and_average_utilization, aes(x = Income_Category, y = Avg_Utilization_Ratio, fill = Income_Category)) +
+  geom_bar(stat = "identity") +  # Use geom_bar for a bar plot
+  scale_x_discrete(limits = cols) +
+  labs(title = 'Average Card Utilization Ratio with respect to Income Category') +
+  theme_minimal()
+
+print(Income_category_and_average_utilization)
+# Display the plot
+print(plot)
+
+
+```
+**The give bar plot implies that there is an inverse relationship between income range and credit card utilization, specifically, a decrease in credit card utilization as income range increases.**
+**In simpler terms, it means that people with higher income ranges tend to use a smaller proportion of their available credit on their credit cards compared to people with lower income ranges. This suggests that individuals with higher incomes may have more financial stability and may not need to rely as heavily on credit card debt, resulting in a lower credit card utilization ratio.**
 
 
 
