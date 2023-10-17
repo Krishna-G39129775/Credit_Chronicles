@@ -75,6 +75,49 @@ print(null_counts1)
 
 <h1 style="color: RED;"><b>EDA --> "Exploratory Data Analysis"</b></h1>
 
+<h1 style="color: RED;"><b>EDA --> "Histograms - Utilized to gain an understanding of the distribution of continuous variables, providing insights into the central tendency, variability, and overall shape of the dataset's distribution.Univariate Analysis - Examining individual variables in isolation.
+"</b></h1>
+
+```{r 1outliers in credit limit , include=TRUE}
+library(tidyverse)
+
+character_columns <- credit_card_final%>% select_if(is.character)
+#Analysis of all the numeric columns
+numeric_columns <- names(credit_card_final %>%
+  select_if(is.numeric) %>%
+  select(-CLIENTNUM))
+
+
+
+variable_columns <- c(numeric_columns)
+
+col_names <- c(numeric_columns)
+
+df <- credit_card_final %>%
+  select(all_of(variable_columns)) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value")
+
+df$Variable <- factor(df$Variable, levels = variable_columns, labels = col_names)
+
+p <- ggplot(df, aes(x = Value)) + 
+  geom_histogram(aes(y = ..count..), fill = '#66c2a5', color = '#004d40', bins = 30) +
+  geom_freqpoly(color = "#e34a33", size = 1) +
+  facet_wrap(~ Variable, scales = "free", ncol = 2) +
+  theme_minimal() + 
+  labs(title = "Histograms of Numeric Variables", y = "Frequency") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+options(
+  repr.plot.width = 10,    # Adjust the width
+  repr.plot.height = 6    # Adjust the height
+)
+
+
+print(p)
+
+
+```
+
 
 
 
