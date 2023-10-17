@@ -28,58 +28,23 @@ knitr::opts_chunk$set(warning = F, message = F)
 options(scientific=T, digits = 3) 
 # options(scipen=9, digits = 3) 
 ```
-
+<h1 style="color: RED;"><b>DATA PREPROCESSING</b></h1>
+<h1 style="color: white;"><b>LOADING DATASET & CHECKING str():</b></h1>
 ```{r reading_datafile_credit_card_churn.csv  , include=TRUE}
 library(readr)
 credit_card <- read.csv("credit_card.csv")
-knitr::kable(str(credit_card))
+print(str(credit_card))
+
 
 ```
-
+<h1 style="color: white;"><b>DIMENSIONS OF DATA: </b></h1>
+```{r}
+dim(credit_card)
+```
+<h1 style="color: white;"><b>SUMMARY OF DATASET:</b></h1>
 ```{r}
 summary(credit_card)
 ```
-
-
-
-```{r Column_names , include=TRUE}
-column_names <- colnames(credit_card)
-last_two_columns <- tail(column_names, 2)
-print(column_names)
-```
-
-
-```{r Dropping_last_two_columns_to_get_final_dataframe , include=TRUE}
-
-credit_card_final <- subset(credit_card,select = !colnames(credit_card) %in% last_two_columns)
-head(credit_card_final,2)
-```
-
-
-```{r summary_on_new_dataframe  , include=TRUE}
-summary(credit_card_final)
-```
-
-```{r}
-library(ggplot2)
-library(dplyr)
-selected_columns <- credit_card_final %>%  select(Customer_Age, Income_Category, Card_Category)
-
-# Create the heatmap
-heatmap <- ggplot(selected_columns, aes(x = Income_Category, y = Card_Category, fill = Customer_Age)) +
-  geom_tile() +
-  scale_fill_gradient(low = "white", high = "blue") +
-  labs(title = "Customer Segmentation Heatmap",
-       x = "Income Category",
-       y = "Card Category") +
-  theme_minimal()
-
-# Display the heatmap
-print(heatmap)
-```
-
-
-
 
 
 
