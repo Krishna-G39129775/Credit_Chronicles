@@ -118,7 +118,20 @@ print(p)
 
 ```
 
+```{r histogram plot for Avg_Utilization_Ratio , include=TRUE}
+library(dplyr)
+library(ggplot2)
 
+credit_card_final_without_unknown <- subset(credit_card_final, Income_Category!= unknown)
+histogram_plot <- ggplot(credit_card_final_without_unknown, aes(x = Avg_Utilization_Ratio, fill = Income_Category)) +
+  geom_histogram(binwidth = 0.05, color = "black") +  
+  facet_wrap(~Income_Category, scales = "free", ncol = 3) +
+  labs(title = 'Histogram of Avg_Utilization_Ratio by Income Category') +
+  theme_minimal()
+
+
+print(histogram_plot)
+```
 
 
 
