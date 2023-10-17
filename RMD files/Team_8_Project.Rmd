@@ -60,11 +60,20 @@ credit_card_final <- subset(credit_card,select = !colnames(credit_card) %in% las
 print(colnames(credit_card_final))
 
 ```
+<h1 style="color: white;"><b>CHECKING FOR NULL VALUES</b></h1>
+```{r}
+null_counts <- colSums(is.na(credit_card_final))
+print(null_counts)
+```
 
+<h1 style="color: white;"><b>REPLACING SPACES WITH NA AND CHECKING FOR NULL VALUES OR UNFILLED VALUES </b></h1>
+```{r}
+credit_card_final[credit_card_final == " "] <- NA
+null_counts1 <- colSums(is.na(credit_card_final))
+print(null_counts1)
+```
 
-
-
-
+<h1 style="color: RED;"><b>EDA --> "Exploratory Data Analysis"</b></h1>
 
 
 
