@@ -163,6 +163,23 @@ print(plot)
 **The give bar plot implies that there is an inverse relationship between income range and credit card utilization, specifically, a decrease in credit card utilization as income range increases.**
 **In simpler terms, it means that people with higher income ranges tend to use a smaller proportion of their available credit on their credit cards compared to people with lower income ranges. This suggests that individuals with higher incomes may have more financial stability and may not need to rely as heavily on credit card debt, resulting in a lower credit card utilization ratio.**
 
+```{r transaction_behavior(total transaction amount and income category) , include=TRUE}
 
+library(dplyr)
+library(ggplot2)
+
+subset_data <- subset(credit_card_final_without_unknown, Credit_Limit!= unknown)
+
+
+countplot <- ggplot(subset_data, aes(y = Card_Category, fill = Card_Category)) +
+  geom_bar() +
+  labs(title = "Countplot of Card Category ") +
+    # Specify the color
+  theme_minimal()+scale_x_continuous(breaks = seq(0,6000, by = 1000))
+
+print(countplot)
+
+
+```
 
 
