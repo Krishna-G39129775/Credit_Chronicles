@@ -292,5 +292,38 @@ credit_card_no_outliers <- credit_card_final
 
 ```
 
-```{r Outlier Removal, include=TRUE}
+````{r Correlation_Analysis, include=TRUE}
+install.packages("corrplot")
+library(corrplot)
 
+# Calculate the correlation matrix for numerical variables
+correlation_matrix <- cor(credit_card_final[, numerical_variables])
+
+# Create a correlation plot
+corrplot(correlation_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 50)
+
+# Display the correlation plot
+```
+```{r}
+# Calculate the correlation matrix
+correlation_matrix <- cor(credit_card_final[, numerical_variables])
+
+# Find highly correlated pairs
+threshold <- 0.4  # Set your desired correlation threshold
+
+# Create an empty matrix to store the results
+related_pairs <- matrix(nrow = 0, ncol = 2)
+
+# Loop through the correlation matrix to find related pairs
+for (i in 1:(length(numerical_variables) - 1)) {
+  for (j in (i + 1):length(numerical_variables)) {
+    if (abs(correlation_matrix[i, j]) >= threshold) {
+      related_pairs <- rbind(related_pairs, c(numerical_variables[i], numerical_variables[j]))
+    }
+  }
+}
+
+# Display related variable pairs
+print(related_pairs)
+
+```
