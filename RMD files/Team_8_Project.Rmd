@@ -121,7 +121,7 @@ print(p)
 ```{r histogram plot for Avg_Utilization_Ratio , include=TRUE}
 library(dplyr)
 library(ggplot2)
-
+unknown <- "Uknown"
 credit_card_final_without_unknown <- subset(credit_card_final, Income_Category!= unknown)
 histogram_plot <- ggplot(credit_card_final_without_unknown, aes(x = Avg_Utilization_Ratio, fill = Income_Category)) +
   geom_histogram(binwidth = 0.05, color = "black") +  
@@ -180,6 +180,117 @@ countplot <- ggplot(subset_data, aes(y = Card_Category, fill = Card_Category)) +
 print(countplot)
 
 
+
 ```
 
+```{r Client_attrition_primary_drivers_ctegorized_into_specific_factors , include=TRUE}
+
+library(ggplot2)
+library(patchwork)
+credit_card_final_without_unknown <- subset(credit_card_final_without_unknown, Education_Level!= unknown)
+
+# Create a contingency table for Education Level
+mar_bar_education <- table(credit_card_final_without_unknown$Education_Level, credit_card_final_without_unknown$Attrition_Flag)
+mar_bar_education <- prop.table(mar_bar_education, margin = 1)
+
+# Create a data frame for Education Level
+mar_bar_education_df <- as.data.frame(mar_bar_education)
+mar_bar_education_df$Education_Level <- rownames(mar_bar_education)
+
+# Create a stacked bar plot for Education Level
+plot_education <- ggplot(mar_bar_education_df, aes(x = Education_Level, y = Freq, fill = Var2)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Attrition Flag by Education Level", x = "Education Level", y = "Percentage") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal()+theme(axis.text.x = element_text(angle = 75, hjust = 1))
+
+# Create a contingency table for Gender
+mar_bar_gender <- table(credit_card_final_without_unknown$Gender, credit_card_final_without_unknown$Attrition_Flag)
+mar_bar_gender <- prop.table(mar_bar_gender, margin = 1)
+
+# Reorder levels to put "Attrition" below "Existing" for Gender
+#mar_bar_gender <- mar_bar_gender[, c("Existing", "Attrited Customer")]
+
+# Create a data frame for Gender
+mar_bar_gender_df <- as.data.frame(mar_bar_gender)
+mar_bar_gender_df$Gender <- rownames(mar_bar_gender)
+
+# Create a stacked bar plot for Gender
+plot_gender <- ggplot(mar_bar_gender_df, aes(x = Gender, y = Freq, fill = Var2)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Attrition Flag by Gender", x = "Gender", y = "Percentage") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal()
+
+combined_plot <- plot_education + plot_gender +
+  plot_layout(ncol = 2)
+
+# Print the combined plot
+print(combined_plot)
+```
+
+
+
+
+
+
+
+
+
+Boxplots offer a useful means of visualizing outliers in the dataset, aiding in the interpretation of data spread and skewness. They also provide information about central tendencies like the median and quartiles while highlighting potential data anomalies for each variable.
+
+```{r boxplot_for_each_numeric_variable  , include=TRUE}
+
+for(i in 1:length(variable_columns)) {
+  p <- ggplot(credit_card_final_without_unknown, aes(y = credit_card_final_without_unknown[[variable_columns[i]]])) + 
+    geom_boxplot(fill = 'black', color = 'green', outlier.color = "red", outlier.size = 2) +
+    labs(title = paste("Box Plot of", col_names[i]), y = col_names[i]) +
+    theme_minimal() 
+  
+  print(p)
+}
+
+
+```
+
+
+
+{r Outlier Dectection, include=TRUE}
+# Create a copy of the dataset to avoid modifying the original data
+credit_card_no_outliers <- credit_card_final
+# Outlier Identifiaction and removal from Customer Age
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Customer_Age, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Customer_Age"]][df_outliers$outliers] <- NA
+
+  # Outlier Identifiaction and removal from Credit Limit
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Credit_Limit, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Credit_Limit"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Months on Book
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Months_on_book, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Months_on_book"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Revolving Balance
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Revolving_Bal, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Revolving_Bal"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Transaction Amount 
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Trans_Amt, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Trans_Amt"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Transaction Ct
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Trans_Ct, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Trans_Ct"]][df_outliers$outliers] <- NA
+
+# Outlier Identifiaction and removal from Average Open to Buy
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Avg_Open_To_Buy, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Avg_Open_To_Buy"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Average Utilization Ratio
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Avg_Utilization_Ratio, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Avg_Utilization_Ratio"]][df_outliers$outliers] <- NA
+
+```
+
+```{r Outlier Removal, include=TRUE}
 
