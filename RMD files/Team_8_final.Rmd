@@ -421,3 +421,42 @@ for (pair in variable_pairs) {
 ```
 
 
+<h1 style="color: white;"><b> OUTLIER DETECTION AND REMOVAL:</b></h1>
+```{r Outlier Dectection, include=TRUE}
+# Create a copy of the dataset to avoid modifying the original data
+credit_card_no_outliers <- credit_card_final
+# Outlier Identifiaction and removal from Customer Age
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Customer_Age, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Customer_Age"]][df_outliers$outliers] <- NA
+
+  # Outlier Identifiaction and removal from Credit Limit
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Credit_Limit, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Credit_Limit"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Months on Book
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Months_on_book, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Months_on_book"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Revolving Balance
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Revolving_Bal, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Revolving_Bal"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Transaction Amount 
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Trans_Amt, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Trans_Amt"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Transaction Ct
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Trans_Ct, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Trans_Ct"]][df_outliers$outliers] <- NA
+
+# Outlier Identifiaction and removal from Average Open to Buy
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Avg_Open_To_Buy, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Avg_Open_To_Buy"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Average Utilization Ratio
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Avg_Utilization_Ratio, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Avg_Utilization_Ratio"]][df_outliers$outliers] <- NA
+
+```
+
+
