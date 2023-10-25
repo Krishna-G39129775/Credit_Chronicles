@@ -159,6 +159,7 @@ ggplot(credit_card_final, aes(x = Gender, y = Avg_Utilization_Ratio, fill = Gend
   theme_minimal()
 
 ```
+
 <h1 style="color: white;"><b>CUSTOMER SEGMENTATION:</b></h1>
 ```{r Customer Segmentation, include=TRUE}
 # Load necessary libraries
@@ -200,4 +201,25 @@ segment_summary <- credit_card_final %>%
 print(segment_summary)
 
 ```
+```{r Card Segmentation, include=TRUE}
+# Segment customers based on Card Category
+credit_card_final$Card_Segment <- ifelse(credit_card_final$Card_Category == "Blue", "Blue Card",
+                        ifelse(credit_card_final$Card_Category == "Silver", "Silver Card",
+                        ifelse(credit_card_final$Card_Category == "Gold", "Gold Card",
+                        ifelse(credit_card_final$Card_Category == "Platinum", "Platinum Card", NA))))
 
+# Visualize the Card Category segmentation
+ggplot(credit_card_final, aes(x = Customer_Age, y = Income_Category, color = Card_Segment)) +
+  geom_point() +
+  labs(title = "Customer Segmentation by Age and Income Category (Card Category)")
+
+# Summary statistics for each Card Category segment
+card_category_summary <- credit_card_final %>%
+  group_by(Card_Segment) %>%
+  summarise(
+    Average_Age = mean(Customer_Age),
+    Average_Income = mean(Income_Category)
+  )
+print(card_category_summary)
+
+```
