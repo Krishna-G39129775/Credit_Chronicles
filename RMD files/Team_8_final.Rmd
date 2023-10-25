@@ -370,3 +370,36 @@ for (pair in related_pairs) {
 ```
 
 
+```{r Creating Histograms and QQplots, include=TRUE}
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+
+# Define the pairs of variables
+variable_pairs <- list(
+  c("Customer_Age", "Months_on_book"),
+  c("Credit_Limit", "Avg_Open_To_Buy"),
+  c("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Create a function to plot histograms and QQ-plots for a variable pair
+plot_histogram_qqpair <- function(pair) {
+  variable1 <- pair[1]
+  variable2 <- pair[2]
+  
+  # Extract data for the pair
+  data_pair <- credit_card_final[, c(variable1, variable2)]
+  
+  # Create a histogram for variable 1
+  hist_var1 <- ggplot(data_pair, aes(x = .data[[variable1]])) +
+    geom_histogram(binwidth = 10, color = "black", fill = "darkgoldenrod") +
+    labs(title = paste("Histogram of", variable1)) +
+    theme_minimal()
+  
+  # Create a histogram for variable 2
+  hist_var2 <- ggplot(data_pair, aes(x = .data[[variable2]])) +
+    geom_histogram(binwidth = 10, color = "black", fill = "tomato") +
+    labs(title = paste("Histogram of", variable2)) +
+    theme_minimal()
+
+
