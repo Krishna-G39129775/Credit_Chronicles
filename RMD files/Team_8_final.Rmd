@@ -58,3 +58,10 @@ print(column_names)
 column_data_types <- sapply(credit_card, class)
 print(column_data_types)
 ```
+<h1 style="color: white;"><b>AFTER DROPING UNNECESSARY COLUMNS:</b></h1>
+```{r Dropping_last_two_columns_to_get_final_dataframe , include=TRUE}
+
+credit_card_final <- subset(credit_card,select = !colnames(credit_card) %in% last_two_columns)
+print(colnames(credit_card_final))
+
+```
