@@ -401,5 +401,23 @@ plot_histogram_qqpair <- function(pair) {
     geom_histogram(binwidth = 10, color = "black", fill = "tomato") +
     labs(title = paste("Histogram of", variable2)) +
     theme_minimal()
+  
+   # Create a QQ-plot
+  qqplot <- ggplot(data_pair, aes(sample = .data[[variable1]])) +
+    geom_qq() +
+    geom_qq_line(color = "darkolivegreen") +
+    labs(title = paste("QQ-Plot of", variable1, "vs Normal Distribution")) +
+    theme_minimal()
+  
+  # Arrange histograms and QQ-plot in one grid
+  grid.arrange(hist_var1, hist_var2, qqplot, ncol = 2)
+}
+
+# Loop through variable pairs and plot histograms and QQ-plots
+for (pair in variable_pairs) {
+  plot_histogram_qqpair(pair)
+}
+
+```
 
 
