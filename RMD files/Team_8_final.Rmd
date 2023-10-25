@@ -280,4 +280,18 @@ threshold <- 0.7  # Set your desired correlation threshold
 # Create an empty matrix to store the results
 related_pairs <- matrix(nrow = 0, ncol = 2)
 
+# Loop through the correlation matrix to find related pairs
+for (i in 1:(length(numerical_variables) - 1)) {
+  for (j in (i + 1):length(numerical_variables)) {
+    if (abs(correlation_matrix[i, j]) >= threshold) {
+      related_pairs <- rbind(related_pairs, c(numerical_variables[i], numerical_variables[j]))
+    }
+  }
+}
+
+# Display related variable pairs
+print(related_pairs)
+
+```
+
 
