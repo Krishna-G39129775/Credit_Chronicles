@@ -132,3 +132,32 @@ for (cat_var in categorical_vars_ggplot) {
 }
 
 ```
+```{r}
+# Load necessary libraries
+library(ggplot2)
+
+# Create a bar graph
+ggplot(credit_card_final, aes(x = Card_Category, y = Credit_Limit, fill = Card_Category)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Credit Limit by Card Category",
+       x = "Card Category",
+       y = "Credit Limit") +
+  theme_minimal()
+
+```
+```{r}
+# Load necessary libraries
+#library(ggplot2)
+
+# Create a bar graph with facets
+#ggplot(credit_card_final, aes(x = Gender, y = Avg_Utilization_Ratio, fill = Gender)) +
+ # geom_bar(stat = "identity") +
+  #labs(title = "Avg Utilization Ratio and Avg Open To Buy by Gender",
+    #   x = "Gender",
+   #    y = "Avg Utilization Ratio") +
+  #facet_wrap(~ Avg_Open_To_Buy, ncol = 3) +
+  #theme_minimal()
+
+```
+
+
