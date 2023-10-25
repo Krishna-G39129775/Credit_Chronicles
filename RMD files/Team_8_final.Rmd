@@ -88,4 +88,26 @@ categorical_variables <- credit_card_final %>%
 
 print(categorical_variables)
 ```
+<h1 style="color: white;"><b>NUMERICAL VARIABLES:</b></h1>
+```{r Numerical_Variables, include=TRUE}
+library(dplyr)
 
+# Identify numerical variables (excluding character and factor)
+numerical_variables <- credit_card_final %>%
+  select_if(function(col) is.numeric(col)) %>%
+  names()
+
+# Separate continuous and discrete variables
+continuous_variables <- credit_card_final %>%
+  select(numerical_variables) %>%
+  summarise_all(function(col) isTRUE(all.equal(col, round(col))))
+
+discrete_variables <- setdiff(numerical_variables, continuous_variables)
+
+# Combine continuous and discrete variables into a single output
+variables_summary <- list(Continuous = continuous_variables, Discrete = discrete_variables)
+
+# Print the variables summary
+print(discrete_variables)
+print(continuous_variables)
+```
