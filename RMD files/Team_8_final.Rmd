@@ -257,3 +257,27 @@ for (column in names(column_binwidths)) {
 
 ```
 
+<h1 style="color: white;"><b>CORRELATION ANALYSIS:</b></h1>
+```{r Correlation_Analysis, include=TRUE}
+#install.packages("corrplot")
+library(corrplot)
+
+# Calculate the correlation matrix for numerical variables
+correlation_matrix <- cor(credit_card_final[, numerical_variables])
+
+# Create a correlation plot
+corrplot(correlation_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 50)
+
+# Display the correlation plot
+```
+```{r}
+# Calculate the correlation matrix
+correlation_matrix <- cor(credit_card_final[, numerical_variables])
+
+# Find highly correlated pairs
+threshold <- 0.7  # Set your desired correlation threshold
+
+# Create an empty matrix to store the results
+related_pairs <- matrix(nrow = 0, ncol = 2)
+
+
