@@ -38,3 +38,11 @@ print(str(credit_card))
 
 
 ```
+<h1 style="color: white;"><b>DIMENSIONS OF DATA: </b></h1>
+```{r}
+dim(credit_card)
+```
+<h1 style="color: white;"><b>SUMMARY OF DATASET:</b></h1>
+```{r}
+summary(credit_card)
+```
