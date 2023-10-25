@@ -46,3 +46,15 @@ dim(credit_card)
 ```{r}
 summary(credit_card)
 ```
+<h1 style="color: white;"><b>COLUMN NAMES IN THE DATASET:</b></h1>
+```{r Column_names , include=TRUE}
+column_names <- colnames(credit_card)
+last_two_columns <- tail(column_names, 2)
+print(column_names)
+
+```
+<h1 style="color: white;"><b>DATA TYPES OF COLUMNS:</b></h1>
+```{r Data_Types_of_Columns, include=TRUE}
+column_data_types <- sapply(credit_card, class)
+print(column_data_types)
+```
