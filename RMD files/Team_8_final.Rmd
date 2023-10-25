@@ -111,3 +111,24 @@ variables_summary <- list(Continuous = continuous_variables, Discrete = discrete
 print(discrete_variables)
 print(continuous_variables)
 ```
+<h1 style="color: RED;"><b>EDA --> "Exploratory Data Analysis"</b></h1>
+
+<h1 style="color: white;"><b>DATA DISTRIBUTION OF CATEGORICAL VARIABLES:</b></h1>
+```{r Data Distribution , include=TRUE}
+library(ggplot2)
+
+categorical_vars_ggplot <- c("Attrition_Flag", "Gender", "Education_Level", "Marital_Status", "Income_Category", "Card_Category")
+
+for (cat_var in categorical_vars_ggplot) {
+  plot_obj <- ggplot(credit_card_final, aes_string(x = cat_var, fill = cat_var)) + 
+    geom_bar() +
+    geom_text(stat='count', aes_string(label='..count..', y='..count..'), vjust=-0.5) +
+    labs(title = paste("Distribution of", cat_var), x = cat_var, y = "Count") +
+    scale_fill_brewer(palette="Set3") + 
+    theme_minimal() +  
+    theme(legend.position="none")  
+  
+  print(plot_obj)
+}
+
+```
