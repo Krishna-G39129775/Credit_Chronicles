@@ -223,3 +223,37 @@ card_category_summary <- credit_card_final %>%
 print(card_category_summary)
 
 ```
+
+
+
+
+<h1 style="color: white;"><b>DATA DISTRIBUTION OF NUMERICAL VARIABLES:</b></h1>
+```{r Data_Distribution, include=TRUE}
+library(ggplot2)
+
+# Define a list of column names and corresponding bin widths
+column_binwidths <- list(
+  "Customer_Age" = 3,
+  "Total_Trans_Amt" = 500,
+  "Total_Trans_Ct" = 7,
+  "Credit_Limit" = 800
+)
+
+# Loop through the columns and create histograms with respective bin widths and density curves
+for (column in names(column_binwidths)) {
+  # Get the bin width for the current column
+  binwidth <- column_binwidths[[column]]
+  
+  # Create a histogram with density curve
+  hist_plot <- ggplot(credit_card_final, aes(x = .data[[column]])) +
+    geom_histogram(binwidth = binwidth, fill = "pink", color = "black", aes(y = ..density..)) +
+    geom_density(alpha = 0.5, color = "green") +
+    labs(title = paste("Histogram with Density Curve of", column)) +
+    theme_minimal()
+  
+  # Display the histogram with density curve
+  print(hist_plot)
+}
+
+```
+
