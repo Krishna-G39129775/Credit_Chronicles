@@ -77,3 +77,15 @@ credit_card_final[credit_card_final == " "] <- NA
 null_counts1 <- colSums(is.na(credit_card_final))
 print(null_counts1)
 ```
+<h1 style="color: white;"><b>CATEGORICAL VARIABLES:</b></h1>
+```{r Categorical_Variables, include=TRUE}
+library(dplyr)
+
+# Identify categorical variables (regardless of data type)
+categorical_variables <- credit_card_final %>%
+  select_if(function(col) is.character(col) || is.factor(col)) %>%
+  names()
+
+print(categorical_variables)
+```
+
