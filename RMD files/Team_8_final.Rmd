@@ -326,3 +326,47 @@ for (pair in variable_pairs) {
 ```
 
 
+<h1 style="color: white;"><b>PLOTTING THE PAIRS:</b></h1>
+```{r Scatter Plot, include=TRUE}
+# Load necessary libraries
+library(ggplot2)
+
+# List of related variable pairs
+related_pairs <- list(
+  list("Customer_Age", "Months_on_book"),
+  list("Credit_Limit", "Avg_Open_To_Buy"),
+  list("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Create a function to plot scatter plots with regression lines for a pair of related variables
+plot_scatter_with_regression <- function(pair) {
+  # Extract variable names
+  var1 <- pair[[1]]
+  var2 <- pair[[2]]
+  
+  # Create a scatter plot
+  scatter_plot <- ggplot(credit_card_final, aes(x = .data[[var1]], y = .data[[var2]])) +
+    geom_point(alpha = 0.6, size = 3, color = "orchid") +
+    geom_smooth(method = "lm", se = FALSE, color = "dodgerblue", size = 1) +
+    labs(
+      title = paste("Scatter Plot of", var1, "vs", var2),
+      x = var1,
+      y = var2
+    ) +
+    theme_minimal()
+  
+  # Set the size of the plot
+  options(repr.plot.width = 6, repr.plot.height = 4)
+  
+  # Display the scatter plot with a regression line
+  print(scatter_plot)
+}
+
+# Loop through related variable pairs and create individual scatter plots
+for (pair in related_pairs) {
+  plot_scatter_with_regression(pair)
+}
+
+```
+
+
