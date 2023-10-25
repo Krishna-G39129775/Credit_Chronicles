@@ -146,17 +146,7 @@ ggplot(credit_card_final, aes(x = Card_Category, y = Credit_Limit, fill = Card_C
 
 ```
 ```{r}
-# Load necessary libraries
-library(ggplot2)
 
-# Create a bar graph with facets
-ggplot(credit_card_final, aes(x = Gender, y = Avg_Utilization_Ratio, fill = Gender)) +
- geom_bar(stat = "identity") +
-  labs(title = "Avg Utilization Ratio and Avg Open To Buy by Gender",
-       x = "Gender",
-       y = "Avg Utilization Ratio") +
-  facet_wrap(~ Avg_Open_To_Buy, ncol = 3) +
-  theme_minimal()
 
 ```
 
@@ -509,4 +499,30 @@ for (pair in variable_pairs) {
 
 ```
 
+```{r checking SD, include=TRUE }
+# Calculate the standard deviation for each specified column
+std_dev_Customer_Age <- sd(credit_card_no_outliers$Customer_Age)
+std_dev_Credit_Limit <- sd(credit_card_no_outliers$Credit_Limit)
+std_dev_Months_on_book <- sd(credit_card_no_outliers$Months_on_book)
+std_dev_Avg_Open_To_Buy <- sd(credit_card_no_outliers$Avg_Open_To_Buy)
+std_dev_Avg_Utilization_Ratio <- sd(credit_card_no_outliers$Avg_Utilization_Ratio)
+std_dev_Total_Revolving_Bal <- sd(credit_card_no_outliers$Total_Revolving_Bal)
+std_dev_Total_Trans_Amt <- sd(credit_card_no_outliers$Total_Trans_Amt)
+std_dev_Total_Trans_Ct <- sd(credit_card_no_outliers$Total_Trans_Ct)
 
+# Create a data frame with column names and standard deviations
+std_dev_table <- data.frame(
+  Column = c("Customer_Age", "Credit_Limit", "Months_on_book", "Avg_Open_To_Buy",
+             "Avg_Utilization_Ratio", "Total_Revolving_Bal", "Total_Trans_Amt", "Total_Trans_Ct"),
+  Standard_Deviation = c(std_dev_Customer_Age, std_dev_Credit_Limit, std_dev_Months_on_book, std_dev_Avg_Open_To_Buy,
+                         std_dev_Avg_Utilization_Ratio, std_dev_Total_Revolving_Bal, std_dev_Total_Trans_Amt, std_dev_Total_Trans_Ct)
+)
+
+# Load the knitr package
+library(knitr)
+
+# Print the table using knitr
+print(std_dev_table, align = "c", col.names = c("Column", "Standard Deviation"), caption = "Standard Deviations")
+
+
+```
