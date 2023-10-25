@@ -294,4 +294,35 @@ print(related_pairs)
 
 ```
 
+<h1 style="color: white;"><b>CORRELATION COEFFICIENTS:</b></h1>
+```{r Correlation Coefficients, include=TRUE}
+# Define the pairs of variables
+variable_pairs <- list(
+  c("Customer_Age", "Months_on_book"),
+  c("Credit_Limit", "Avg_Open_To_Buy"),
+  c("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Function to calculate and display correlation
+calculate_and_display_correlation <- function(pair) {
+  variable1 <- pair[1]
+  variable2 <- pair[2]
+  
+  # Extract data for the pair
+  data_pair <- credit_card_final[, c(variable1, variable2)]
+  
+  # Calculate correlation
+  correlation_coefficient <- cor(data_pair[[variable1]], data_pair[[variable2]])
+  
+  # Print the correlation result
+  cat("Correlation between", variable1, "and", variable2, "is", correlation_coefficient, "\n")
+}
+
+# Loop through variable pairs and calculate/display correlations
+for (pair in variable_pairs) {
+  calculate_and_display_correlation(pair)
+}
+
+```
+
 
