@@ -1,0 +1,85 @@
+/* Reset some default styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f8;
+}
+
+.title , .author{
+  background-color: black;
+  color: aquamarine;
+  color: white;
+  padding: 10px;
+  font-size: 24px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bolder;
+  text-align: center; /* Center the text */
+  opacity: 0.6; /* Increase or decrease the opacity as needed */
+
+
+}
+
+/* Credit Card Container */
+.card {
+  background-color: #fff;
+  width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Card Number */
+.card-number {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Card Holder's Name */
+.card-name {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* Expiration Date */
+.expiry {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* Customize Your CSS for Other Card Elements (CVV, Logo, etc.) */
+
+/* Button */
+.button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Set a background image for the document */
+body {
+  background-image: url('images/background-image3.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Include a custom logo image */
+.logo {
+  background-image: url('logo-image.png');
+  background-size: contain;
+  width: 100px; /* Adjust width as needed */
+  height: 100px; /* Adjust height as needed */
+}

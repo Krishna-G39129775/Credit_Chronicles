@@ -1,0 +1,645 @@
+---
+title: "Team 8: Credit Chronicles "
+author: "Members: Sai Krishna ,Gourab Mukherjee, Tulasi"
+#date: "`r Sys.Date()`"
+output:
+  html_document:
+    css: custom_theme.css
+    code_folding: hide
+---
+
+
+```{r init, include=F}
+# The package "ezids" (EZ Intro to Data Science) includes some helper functions we developed for the course. 
+# Some of the frequently used functions are loadPkg(), xkabledply(), xkablesummary(), uzscale(), etc.
+# You will need to install it (once) from GitHub.
+#install.packages("devtools")
+#library(devtools)
+#devtools::install_github("physicsland/ezids")
+# Then load the package in your R session.
+library(ezids)
+```
+
+
+```{r setup, include=FALSE}
+# Some of common RMD options (and the defaults) are: 
+# include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
+knitr::opts_chunk$set(warning = F, message = F)
+# Can globally set option for number display format.
+options(scientific=T, digits = 3) 
+# options(scipen=9, digits = 3) 
+```
+<h1 style="color: RED;"><b>DATA PREPROCESSING</b></h1>
+<h1 style="color: white;"><b>LOADING DATASET & CHECKING str():</b></h1>
+```{r reading_datafile_credit_card_churn.csv  , include=TRUE}
+library(readr)
+credit_card <- read.csv("credit_card.csv")
+print(str(credit_card))
+
+
+```
+<h1 style="color: white;"><b>DIMENSIONS OF DATA: </b></h1>
+```{r}
+dim(credit_card)
+```
+<h1 style="color: white;"><b>SUMMARY OF DATASET:</b></h1>
+```{r}
+summary(credit_card)
+```
+<h1 style="color: white;"><b>COLUMN NAMES IN THE DATASET:</b></h1>
+```{r Column_names , include=TRUE}
+column_names <- colnames(credit_card)
+last_two_columns <- tail(column_names, 2)
+print(column_names)
+
+```
+<h1 style="color: white;"><b>DATA TYPES OF COLUMNS:</b></h1>
+```{r Data_Types_of_Columns, include=TRUE}
+column_data_types <- sapply(credit_card, class)
+print(column_data_types)
+```
+<h1 style="color: white;"><b>AFTER DROPING UNNECESSARY COLUMNS:</b></h1>
+```{r Dropping_last_two_columns_to_get_final_dataframe , include=TRUE}
+
+credit_card_final <- subset(credit_card,select = !colnames(credit_card) %in% last_two_columns)
+print(colnames(credit_card_final))
+
+```
+<h1 style="color: white;"><b>CHECKING FOR NULL VALUES</b></h1>
+```{r}
+null_counts <- colSums(is.na(credit_card_final))
+print(null_counts)
+```
+
+<h1 style="color: white;"><b>REPLACING SPACES WITH NA AND CHECKING FOR NULL VALUES OR UNFILLED VALUES </b></h1>
+```{r}
+credit_card_final[credit_card_final == " "] <- NA
+null_counts1 <- colSums(is.na(credit_card_final))
+print(null_counts1)
+```
+<h1 style="color: white;"><b>CATEGORICAL VARIABLES:</b></h1>
+```{r Categorical_Variables, include=TRUE}
+library(dplyr)
+
+# Identify categorical variables (regardless of data type)
+categorical_variables <- credit_card_final %>%
+  select_if(function(col) is.character(col) || is.factor(col)) %>%
+  names()
+
+print(categorical_variables)
+```
+<h1 style="color: white;"><b>NUMERICAL VARIABLES:</b></h1>
+```{r Numerical_Variables, include=TRUE}
+library(dplyr)
+
+# Identify numerical variables (excluding character and factor)
+numerical_variables <- credit_card_final %>%
+  select_if(function(col) is.numeric(col)) %>%
+  names()
+
+# Separate continuous and discrete variables
+continuous_variables <- credit_card_final %>%
+  select(numerical_variables) %>%
+  summarise_all(function(col) isTRUE(all.equal(col, round(col))))
+
+discrete_variables <- setdiff(numerical_variables, continuous_variables)
+
+# Combine continuous and discrete variables into a single output
+variables_summary <- list(Continuous = continuous_variables, Discrete = discrete_variables)
+
+# Print the variables summary
+print(discrete_variables)
+print(continuous_variables)
+```
+
+<h1 style="color: RED;"><b>EDA --> "Exploratory Data Analysis"</b></h1>
+
+<h1 style="color: white;"><b>DATA DISTRIBUTION OF CATEGORICAL VARIABLES:</b></h1>
+```{r Data Distribution , include=TRUE}
+library(ggplot2)
+
+categorical_vars_ggplot <- c("Attrition_Flag", "Gender", "Education_Level", "Marital_Status", "Income_Category", "Card_Category")
+
+for (cat_var in categorical_vars_ggplot) {
+  plot_obj <- ggplot(credit_card_final, aes_string(x = cat_var, fill = cat_var)) + 
+    geom_bar() +
+    geom_text(stat='count', aes_string(label='..count..', y='..count..'), vjust=-0.5) +
+    labs(title = paste("Distribution of", cat_var), x = cat_var, y = "Count") +
+    scale_fill_brewer(palette="Set3") + 
+    theme_minimal() +  
+    theme(legend.position="none")  
+  
+  print(plot_obj)
+}
+
+```
+```{r}
+# Load necessary libraries
+library(ggplot2)
+
+# Create a bar graph
+ggplot(credit_card_final, aes(x = Card_Category, y = Credit_Limit, fill = Card_Category)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Credit Limit by Card Category",
+       x = "Card Category",
+       y = "Credit Limit") +
+  theme_minimal()
+
+```
+```{r}
+# Load necessary libraries
+#library(ggplot2)
+
+# Create a bar graph with facets
+#ggplot(credit_card_final, aes(x = Gender, y = Avg_Utilization_Ratio, fill = Gender)) +
+ # geom_bar(stat = "identity") +
+  #labs(title = "Avg Utilization Ratio and Avg Open To Buy by Gender",
+    #   x = "Gender",
+   #    y = "Avg Utilization Ratio") +
+  #facet_wrap(~ Avg_Open_To_Buy, ncol = 3) +
+  #theme_minimal()
+
+```
+
+
+
+<h1 style="color: white;"><b>CUSTOMER SEGMENTATION:</b></h1>
+```{r Customer Segmentation, include=TRUE}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+# Select relevant attributes for segmentation
+selected_attributes <- credit_card_final %>% 
+  select(Customer_Age, Income_Category, Card_Category)
+
+# Define the segmentation criteria (you can adjust these criteria as needed)
+young_high_income <- with(credit_card_final, Customer_Age < 35 & Income_Category >= 4)
+middle_age_high_income <- with(credit_card_final, Customer_Age >= 35 & Customer_Age <= 60 & Income_Category >= 4)
+senior_high_income <- with(credit_card_final, Customer_Age > 60 & Income_Category >= 4)
+young_low_income <- with(credit_card_final, Customer_Age < 35 & Income_Category < 4)
+middle_age_low_income <- with(credit_card_final, Customer_Age >= 35 & Customer_Age <= 60 & Income_Category < 4)
+senior_low_income <- with(credit_card_final, Customer_Age > 60 & Income_Category < 4)
+
+# Assign segments to the original dataset
+credit_card_final$Segment <- ifelse(young_high_income, "Young High Income",
+                          ifelse(middle_age_high_income, "Middle Age High Income",
+                          ifelse(senior_high_income, "Senior High Income",
+                          ifelse(young_low_income, "Young Low Income",
+                          ifelse(middle_age_low_income, "Middle Age Low Income",
+                          ifelse(senior_low_income, "Senior Low Income", NA))))))
+
+# Visualize the segmentation
+ggplot(credit_card_final, aes(x = Customer_Age, y = Income_Category, color = Segment)) +
+  geom_point() +
+  labs(title = "Customer Segmentation by Age and Income Category")
+
+# Summary statistics for each segment
+segment_summary <- credit_card_final %>%
+  group_by(Segment) %>%
+  summarise(
+    Average_Age = mean(Customer_Age),
+    Average_Income = mean(Income_Category)
+  )
+print(segment_summary)
+
+```
+
+```{r Card Segmentation, include=TRUE}
+# Segment customers based on Card Category
+credit_card_final$Card_Segment <- ifelse(credit_card_final$Card_Category == "Blue", "Blue Card",
+                        ifelse(credit_card_final$Card_Category == "Silver", "Silver Card",
+                        ifelse(credit_card_final$Card_Category == "Gold", "Gold Card",
+                        ifelse(credit_card_final$Card_Category == "Platinum", "Platinum Card", NA))))
+
+# Visualize the Card Category segmentation
+ggplot(credit_card_final, aes(x = Customer_Age, y = Income_Category, color = Card_Segment)) +
+  geom_point() +
+  labs(title = "Customer Segmentation by Age and Income Category (Card Category)")
+
+# Summary statistics for each Card Category segment
+card_category_summary <- credit_card_final %>%
+  group_by(Card_Segment) %>%
+  summarise(
+    Average_Age = mean(Customer_Age),
+    Average_Income = mean(Income_Category)
+  )
+print(card_category_summary)
+
+```
+
+
+<h1 style="color: white;"><b>DATA DISTRIBUTION OF NUMERICAL VARIABLES:</b></h1>
+```{r Data_Distribution, include=TRUE}
+library(ggplot2)
+
+# Define a list of column names and corresponding bin widths
+column_binwidths <- list(
+  "Customer_Age" = 3,
+  "Total_Trans_Amt" = 500,
+  "Total_Trans_Ct" = 7,
+  "Credit_Limit" = 800
+)
+
+# Loop through the columns and create histograms with respective bin widths and density curves
+for (column in names(column_binwidths)) {
+  # Get the bin width for the current column
+  binwidth <- column_binwidths[[column]]
+  
+  # Create a histogram with density curve
+  hist_plot <- ggplot(credit_card_final, aes(x = .data[[column]])) +
+    geom_histogram(binwidth = binwidth, fill = "pink", color = "black", aes(y = ..density..)) +
+    geom_density(alpha = 0.5, color = "green") +
+    labs(title = paste("Histogram with Density Curve of", column)) +
+    theme_minimal()
+  
+  # Display the histogram with density curve
+  print(hist_plot)
+}
+
+```
+
+<h1 style="color: white;"><b>CORRELATION ANALYSIS:</b></h1>
+```{r Correlation_Analysis, include=TRUE}
+#install.packages("corrplot")
+library(corrplot)
+
+# Calculate the correlation matrix for numerical variables
+correlation_matrix <- cor(credit_card_final[, numerical_variables])
+
+# Create a correlation plot
+corrplot(correlation_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 50)
+
+# Display the correlation plot
+```
+```{r}
+# Calculate the correlation matrix
+correlation_matrix <- cor(credit_card_final[, numerical_variables])
+
+# Find highly correlated pairs
+threshold <- 0.7  # Set your desired correlation threshold
+
+# Create an empty matrix to store the results
+related_pairs <- matrix(nrow = 0, ncol = 2)
+
+# Loop through the correlation matrix to find related pairs
+for (i in 1:(length(numerical_variables) - 1)) {
+  for (j in (i + 1):length(numerical_variables)) {
+    if (abs(correlation_matrix[i, j]) >= threshold) {
+      related_pairs <- rbind(related_pairs, c(numerical_variables[i], numerical_variables[j]))
+    }
+  }
+}
+
+# Display related variable pairs
+print(related_pairs)
+
+```
+
+<h1 style="color: white;"><b>CORRELATION COEFFICIENTS:</b></h1>
+```{r Correlation Coefficients, include=TRUE}
+# Define the pairs of variables
+variable_pairs <- list(
+  c("Customer_Age", "Months_on_book"),
+  c("Credit_Limit", "Avg_Open_To_Buy"),
+  c("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Function to calculate and display correlation
+calculate_and_display_correlation <- function(pair) {
+  variable1 <- pair[1]
+  variable2 <- pair[2]
+  
+  # Extract data for the pair
+  data_pair <- credit_card_final[, c(variable1, variable2)]
+  
+  # Calculate correlation
+  correlation_coefficient <- cor(data_pair[[variable1]], data_pair[[variable2]])
+  
+  # Print the correlation result
+  cat("Correlation between", variable1, "and", variable2, "is", correlation_coefficient, "\n")
+}
+
+# Loop through variable pairs and calculate/display correlations
+for (pair in variable_pairs) {
+  calculate_and_display_correlation(pair)
+}
+
+```
+
+<h1 style="color: white;"><b>PLOTTING THE PAIRS:</b></h1>
+```{r Scatter Plot, include=TRUE}
+# Load necessary libraries
+library(ggplot2)
+
+# List of related variable pairs
+related_pairs <- list(
+  list("Customer_Age", "Months_on_book"),
+  list("Credit_Limit", "Avg_Open_To_Buy"),
+  list("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Create a function to plot scatter plots with regression lines for a pair of related variables
+plot_scatter_with_regression <- function(pair) {
+  # Extract variable names
+  var1 <- pair[[1]]
+  var2 <- pair[[2]]
+  
+  # Create a scatter plot
+  scatter_plot <- ggplot(credit_card_final, aes(x = .data[[var1]], y = .data[[var2]])) +
+    geom_point(alpha = 0.6, size = 3, color = "orchid") +
+    geom_smooth(method = "lm", se = FALSE, color = "dodgerblue", size = 1) +
+    labs(
+      title = paste("Scatter Plot of", var1, "vs", var2),
+      x = var1,
+      y = var2
+    ) +
+    theme_minimal()
+  
+  # Set the size of the plot
+  options(repr.plot.width = 6, repr.plot.height = 4)
+  
+  # Display the scatter plot with a regression line
+  print(scatter_plot)
+}
+
+# Loop through related variable pairs and create individual scatter plots
+for (pair in related_pairs) {
+  plot_scatter_with_regression(pair)
+}
+
+```
+```{r Creating Histograms and QQplots, include=TRUE}
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+
+# Define the pairs of variables
+variable_pairs <- list(
+  c("Customer_Age", "Months_on_book"),
+  c("Credit_Limit", "Avg_Open_To_Buy"),
+  c("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Create a function to plot histograms and QQ-plots for a variable pair
+plot_histogram_qqpair <- function(pair) {
+  variable1 <- pair[1]
+  variable2 <- pair[2]
+  
+  # Extract data for the pair
+  data_pair <- credit_card_final[, c(variable1, variable2)]
+  
+  # Create a histogram for variable 1
+  hist_var1 <- ggplot(data_pair, aes(x = .data[[variable1]])) +
+    geom_histogram(binwidth = 10, color = "black", fill = "darkgoldenrod") +
+    labs(title = paste("Histogram of", variable1)) +
+    theme_minimal()
+  
+  # Create a histogram for variable 2
+  hist_var2 <- ggplot(data_pair, aes(x = .data[[variable2]])) +
+    geom_histogram(binwidth = 10, color = "black", fill = "tomato") +
+    labs(title = paste("Histogram of", variable2)) +
+    theme_minimal()
+  
+  # Create a QQ-plot
+  qqplot <- ggplot(data_pair, aes(sample = .data[[variable1]])) +
+    geom_qq() +
+    geom_qq_line(color = "darkolivegreen") +
+    labs(title = paste("QQ-Plot of", variable1, "vs Normal Distribution")) +
+    theme_minimal()
+  
+  # Arrange histograms and QQ-plot in one grid
+  grid.arrange(hist_var1, hist_var2, qqplot, ncol = 2)
+}
+
+# Loop through variable pairs and plot histograms and QQ-plots
+for (pair in variable_pairs) {
+  plot_histogram_qqpair(pair)
+}
+
+```
+
+<h1 style="color: white;"><b> OUTLIER DETECTION AND REMOVAL:</b></h1>
+```{r Outlier Dectection, include=TRUE}
+# Create a copy of the dataset to avoid modifying the original data
+credit_card_no_outliers <- credit_card_final
+# Outlier Identifiaction and removal from Customer Age
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Customer_Age, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Customer_Age"]][df_outliers$outliers] <- NA
+
+  # Outlier Identifiaction and removal from Credit Limit
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Credit_Limit, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Credit_Limit"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Months on Book
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Months_on_book, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Months_on_book"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Revolving Balance
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Revolving_Bal, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Revolving_Bal"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Transaction Amount 
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Trans_Amt, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Trans_Amt"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Total Transaction Ct
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Total_Trans_Ct, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Total_Trans_Ct"]][df_outliers$outliers] <- NA
+
+# Outlier Identifiaction and removal from Average Open to Buy
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Avg_Open_To_Buy, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Avg_Open_To_Buy"]][df_outliers$outliers] <- NA
+  
+# Outlier Identifiaction and removal from Average Utilization Ratio
+  df_outliers <- ezids::outlierKD2(credit_card_no_outliers,Avg_Utilization_Ratio, rm = TRUE, boxplt = TRUE, qqplt = TRUE)
+  credit_card_no_outliers[["Avg_Utilization_Ratio"]][df_outliers$outliers] <- NA
+
+```
+
+```{r checking_graph after removed_Outlier, include=TRUE}
+
+library(ggplot2)
+library(gridExtra)
+
+# Define the pairs of variables
+variable_pairs <- list(
+  c("Customer_Age", "Months_on_book"),
+  c("Credit_Limit", "Avg_Open_To_Buy"),
+  c("Total_Trans_Amt", "Total_Trans_Ct")
+)
+
+# Create a function to plot histograms and QQ-plots for a variable pair
+plot_histogram_qqpair <- function(pair) {
+  variable1 <- pair[1]
+  variable2 <- pair[2]
+  
+  # Extract data for the pair
+  data_pair <- credit_card_no_outliers[, c(variable1, variable2)]
+  
+  # Create a histogram for variable 1
+  hist_var1 <- ggplot(data_pair, aes(x = .data[[variable1]])) +
+    geom_histogram(binwidth = 10, color = "black", fill = "darkgoldenrod") +
+    labs(title = paste("Histogram of", variable1)) +
+    theme_minimal()
+  
+  # Create a histogram for variable 2
+  hist_var2 <- ggplot(data_pair, aes(x = .data[[variable2]])) +
+    geom_histogram(binwidth = 10, color = "black", fill = "tomato") +
+    labs(title = paste("Histogram of", variable2)) +
+    theme_minimal()
+  
+  # Create a QQ-plot
+  qqplot <- ggplot(data_pair, aes(sample = .data[[variable1]])) +
+    geom_qq() +
+    geom_qq_line(color = "darkolivegreen") +
+    labs(title = paste("QQ-Plot of", variable1, "vs Normal Distribution")) +
+    theme_minimal()
+  
+  # Arrange histograms and QQ-plot in one grid
+  grid.arrange(hist_var1, hist_var2, qqplot, ncol = 2)
+}
+
+# Loop through variable pairs and plot histograms and QQ-plots
+for (pair in variable_pairs) {
+  plot_histogram_qqpair(pair)
+}
+
+```
+
+```{r checking SD, include=TRUE }
+# Calculate the standard deviation for each specified column
+std_dev_Customer_Age <- sd(credit_card_no_outliers$Customer_Age)
+std_dev_Credit_Limit <- sd(credit_card_no_outliers$Credit_Limit)
+std_dev_Months_on_book <- sd(credit_card_no_outliers$Months_on_book)
+std_dev_Avg_Open_To_Buy <- sd(credit_card_no_outliers$Avg_Open_To_Buy)
+std_dev_Avg_Utilization_Ratio <- sd(credit_card_no_outliers$Avg_Utilization_Ratio)
+std_dev_Total_Revolving_Bal <- sd(credit_card_no_outliers$Total_Revolving_Bal)
+std_dev_Total_Trans_Amt <- sd(credit_card_no_outliers$Total_Trans_Amt)
+std_dev_Total_Trans_Ct <- sd(credit_card_no_outliers$Total_Trans_Ct)
+
+# Create a data frame with column names and standard deviations
+std_dev_table <- data.frame(
+  Column = c("Customer_Age", "Credit_Limit", "Months_on_book", "Avg_Open_To_Buy",
+             "Avg_Utilization_Ratio", "Total_Revolving_Bal", "Total_Trans_Amt", "Total_Trans_Ct"),
+  Standard_Deviation = c(std_dev_Customer_Age, std_dev_Credit_Limit, std_dev_Months_on_book, std_dev_Avg_Open_To_Buy,
+                         std_dev_Avg_Utilization_Ratio, std_dev_Total_Revolving_Bal, std_dev_Total_Trans_Amt, std_dev_Total_Trans_Ct)
+)
+
+# Load the knitr package
+library(knitr)
+
+# Print the table using knitr
+print(std_dev_table, align = "c", col.names = c("Column", "Standard Deviation"), caption = "Standard Deviations")
+
+
+```
+
+
+
+```{r}
+# Perform t-test
+t_test_result <- t.test(credit_card_no_outliers$Total_Trans_Amt ~ credit_card_no_outliers$Gender)
+
+# Print the results
+print("T-test for Total_Trans_Amt and Gender")
+print(t_test_result)
+```
+
+
+
+```{r}
+# Create a contingency table of income category and churn status
+table_data <- table(credit_card_no_outliers$Income_Category, credit_card_no_outliers$Income_Category)
+
+# Perform chi-square test
+chi_sq_test <- t.test(table_data)
+
+# Print the test results
+chi_sq_test
+```
+
+
+```{r}
+# Plot 1
+ggplot(credit_card_final, aes(x=Credit_Limit, y=Avg_Utilization_Ratio)) +
+  geom_point(alpha=0.5, colour='blue', shape=4) +
+  ggtitle("Example Plot") +
+  xlab("Credit Limit") +
+  ylab("Average Utilization Ratio") +
+  theme_minimal()
+
+# Plot 2
+ggplot(credit_card_final[credit_card_final$Income_Category != "Unknown", ], 
+       aes(x = Customer_Age, y = Credit_Limit, color = Income_Category)) +
+  geom_point(alpha = 0.6) +
+  ggtitle("Relation Between Credit Limit Vs Age Coloured by Income_Category") +
+  xlab("Age") +
+  ylab("Credit Limit") +
+  scale_colour_viridis_d() +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+
+```
+
+
+
+
+```{r}
+
+# Perform t-test for Contacts_Count_12_mon between attrition and non-attrition groups
+attrition_group <- credit_card_final$Contacts_Count_12_mon[credit_card_final$Attrition_Flag == "Attrited Customer"]
+non_attrition_group <- credit_card_final$Contacts_Count_12_mon[credit_card_final$Attrition_Flag == "Existing Customer"]
+
+t_test_result <- t.test(attrition_group, non_attrition_group)
+
+# Print t-test results
+print(t_test_result)
+```
+
+```{r}
+contingency_table_income <- table(credit_card_no_outliers$Income_Category , credit_card_no_outliers$Attrition_Flag)
+
+ChiS2_test_income <- chisq.test(contingency_table_income)
+print(contingency_table_income)
+print(ChiS2_test_income)
+
+Attrition_rate <- (contingency_table_income[,"Attrited Customer"]/ (contingency_table_income[,"Attrited Customer"]+contingency_table_income[,"Existing Customer"]))*100
+print(Attrition_rate)
+
+```
+
+```{r}
+# load libraries
+library(dplyr)
+library(ggplot2)
+
+# group data
+grouped_df <- credit_card_no_outliers %>%
+               group_by(Income_Category) %>%
+               summarise(Transaction_mean = mean(Total_Trans_Amt, na.rm = TRUE),
+                         Transaction_median = median(Total_Trans_Amt, na.rm = TRUE),
+                         n = n())
+
+# plotting
+ggplot(grouped_df, aes(x=Income_Category)) +
+  geom_col(aes(y=Transaction_mean, fill="Mean"), width=0.4, position=position_dodge(width=0.5)) +
+  geom_col(aes(y=Transaction_median, fill="Median"), width=0.4, position=position_dodge(width=0.5)) +
+  labs(fill='Transaction', y='Transaction Value', title='Transaction Behaviour by Income Category') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+```
+
+
+
+
+```{r}
+male_utilization <- credit_card_no_outliers[credit_card_no_outliers$Gender=="M",]$Avg_Utilization_Ratio
+female_utilization <- credit_card_no_outliers[credit_card_no_outliers$Gender=="F",]$Avg_Utilization_Ratio
+
+tt_result <- t.test(male_utilization, female_utilization)
+
+print(tt_result)
+```
