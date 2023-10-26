@@ -547,7 +547,7 @@ chi_sq_test
 
 ```{r}
 # Create a contingency table of income category and churn status
-table_data <- table(credit_card_no_outliers$Income_Category, credit_card_no_outliers$Education_Level)
+table_data <- table(credit_card_no_outliers$Income_Category, credit_card_no_outliers$Gender)
 
 # Perform chi-square test
 chi_sq_test <- t.test(table_data)
