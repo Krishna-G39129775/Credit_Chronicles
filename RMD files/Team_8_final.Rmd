@@ -578,3 +578,50 @@ ggplot(credit_card_final[credit_card_final$Income_Category != "Unknown", ],
 
 
 ```
+
+```{r}
+
+# Perform t-test for Contacts_Count_12_mon between attrition and non-attrition groups
+attrition_group <- credit_card_final$Contacts_Count_12_mon[credit_card_final$Attrition_Flag == "Attrited Customer"]
+non_attrition_group <- credit_card_final$Contacts_Count_12_mon[credit_card_final$Attrition_Flag == "Existing Customer"]
+
+t_test_result <- t.test(attrition_group, non_attrition_group)
+
+# Print t-test results
+print(t_test_result)
+```
+
+```{r}
+contingency_table_income <- table(credit_card_no_outliers$Income_Category , credit_card_no_outliers$Attrition_Flag)
+
+ChiS2_test_income <- chisq.test(contingency_table_income)
+print(contingency_table_income)
+print(ChiS2_test_income)
+
+Attrition_rate <- (contingency_table_income[,"Attrited Customer"]/ (contingency_table_income[,"Attrited Customer"]+contingency_table_income[,"Existing Customer"]))*100
+print(Attrition_rate)
+
+```
+
+```{r}
+# load libraries
+library(dplyr)
+library(ggplot2)
+
+# group data
+grouped_df <- credit_card_no_outliers %>%
+               group_by(Income_Category) %>%
+               summarise(Transaction_mean = mean(Total_Trans_Amt, na.rm = TRUE),
+                         Transaction_median = median(Total_Trans_Amt, na.rm = TRUE),
+                         n = n())
+
+# plotting
+ggplot(grouped_df, aes(x=Income_Category)) +
+  geom_col(aes(y=Transaction_mean, fill="Mean"), width=0.4, position=position_dodge(width=0.5)) +
+  geom_col(aes(y=Transaction_median, fill="Median"), width=0.4, position=position_dodge(width=0.5)) +
+  labs(fill='Transaction', y='Transaction Value', title='Transaction Behaviour by Income Category') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+```
+
