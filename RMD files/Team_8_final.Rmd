@@ -555,3 +555,26 @@ chi_sq_test <- t.test(table_data)
 # Print the test results
 chi_sq_test
 ```
+
+```{r}
+# Plot 1
+ggplot(credit_card_final, aes(x=Credit_Limit, y=Avg_Utilization_Ratio)) +
+  geom_point(alpha=0.5, colour='blue', shape=4) +
+  ggtitle("Example Plot") +
+  xlab("Credit Limit") +
+  ylab("Average Utilization Ratio") +
+  theme_minimal()
+
+# Plot 2
+ggplot(credit_card_final[credit_card_final$Income_Category != "Unknown", ], 
+       aes(x = Customer_Age, y = Credit_Limit, color = Income_Category)) +
+  geom_point(alpha = 0.6) +
+  ggtitle("Relation Between Credit Limit Vs Age Coloured by Income_Category") +
+  xlab("Age") +
+  ylab("Credit Limit") +
+  scale_colour_viridis_d() +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+
+```
