@@ -526,3 +526,11 @@ print(std_dev_table, align = "c", col.names = c("Column", "Standard Deviation"),
 
 
 ```
+```{r}
+# Perform t-test
+t_test_result <- t.test(credit_card_no_outliers$Total_Trans_Amt ~ credit_card_no_outliers$Gender)
+
+# Print the results
+print("T-test for Total_Trans_Amt and Gender")
+print(t_test_result)
+```
