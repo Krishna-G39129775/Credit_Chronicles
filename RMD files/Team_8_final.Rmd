@@ -534,3 +534,24 @@ t_test_result <- t.test(credit_card_no_outliers$Total_Trans_Amt ~ credit_card_no
 print("T-test for Total_Trans_Amt and Gender")
 print(t_test_result)
 ```
+```{r}
+# Create a contingency table of income category and churn status
+table_data <- table(credit_card_no_outliers$Income_Category, credit_card_no_outliers$Income_Category)
+
+# Perform chi-square test
+chi_sq_test <- t.test(table_data)
+
+# Print the test results
+chi_sq_test
+```
+
+```{r}
+# Create a contingency table of income category and churn status
+table_data <- table(credit_card_no_outliers$Income_Category, credit_card_no_outliers$Education_Level)
+
+# Perform chi-square test
+chi_sq_test <- t.test(table_data)
+
+# Print the test results
+chi_sq_test
+```
