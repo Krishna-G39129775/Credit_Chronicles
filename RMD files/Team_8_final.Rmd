@@ -625,3 +625,11 @@ ggplot(grouped_df, aes(x=Income_Category)) +
 
 ```
 
+```{r}
+male_utilization <- credit_card_no_outliers[credit_card_no_outliers$Gender=="F",]$Avg_Utilization_Ratio
+female_utilization <- credit_card_no_outliers[credit_card_no_outliers$Gender=="M",]$Avg_Utilization_Ratio
+
+tt_result <- t.test(male_utilization, female_utilization)
+
+print(tt_result)
+```
