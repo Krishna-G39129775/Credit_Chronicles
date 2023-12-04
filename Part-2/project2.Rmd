@@ -1,0 +1,141 @@
+---
+title: ""
+author: "Saikrishna Paila"
+date: "10/26/2023"
+output:
+    rmdformats::readthedown:
+      toc_float: true
+      toc_depth: 3
+      number_sections: false
+      code_folding: hide
+---
+```{r}
+library(caret)
+library(nnet)
+library(rpart)
+library(randomForest)
+library(gbm)
+library(e1071)
+library(pROC)
+```
+
+```{r}
+# Load the data
+data <- read.csv('credit_card.csv')
+# Drop specific columns
+data$Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1 <- NULL
+data$Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2 <- NULL
+
+```
+
+```{r}
+# Install the package if it's not already installed
+if (!require(caTools)) {
+  install.packages("caTools")
+}
+
+# Load the package
+library(caTools)
+
+# Now you can use the sample.split function
+split <- sample.split(data$Attrition_Flag, SplitRatio = 0.8)
+train_df <- subset(data, split == TRUE)
+test_df  <- subset(data, split == FALSE)
+
+# Now, you can separate the predictors (X) from the target (y)
+X_train <- train_df[, -which(names(train_df) %in% "Attrition_Flag")]
+y_train <- train_df$Attrition_Flag
+X_test <- test_df[, -which(names(test_df) %in% "Attrition_Flag")]
+y_test <- test_df$Attrition_Flag
+```
+
+```{r}
+# Create a copy of the dataframes
+X_test_copy <- X_test
+y_test_copy <- y_test
+```
+
+
+```{r}
+head(X_test)
+```
+```{r}
+colnames(train_df)
+```
+```{r}
+# Select predictors (X) excluding 'CLIENTNUM' and 'Attrition_Flag'
+X <- train_df[, !(names(train_df) %in% c('CLIENTNUM', 'Attrition_Flag'))]
+
+# Select target variable (y)
+y <- train_df$Attrition_Flag
+```
+
+```{r, onhot}
+# Install and load the necessary package
+if (!require(caret)) {
+  install.packages("caret")
+  library(caret)
+}
+
+# Create a copy of the dataframe
+X_1 <- X
+
+# Define the columns to one-hot encode
+cols_to_encode <- c('Gender', 'Education_Level', 'Marital_Status', 'Income_Category', 'Card_Category')
+
+# Perform one-hot encoding and drop the original columns
+for (i in cols_to_encode) {
+  # Create dummy variables
+  formula <- paste(i, "~ . - 1")
+  tempdf <- model.matrix(as.formula(formula), data=X_1)
+  colnames(tempdf) <- paste(i, colnames(tempdf), sep="_")  # Add prefix to the column names
+  
+  # Concatenate the dummy variables with the original dataframe
+  X_1 <- cbind(X_1, tempdf)
+  
+  # Drop the original column
+  X_1 <- X_1[, !names(X_1) %in% i]
+}
+
+# Print the first few rows of the modified dataframe
+head(X_1)
+```
+
+```{r, summary}
+library(psych)
+describe(X_1)
+```
+```{r}
+# Create a copy of the dataframe
+X_2 <- X_1
+
+# Define the numeric columns to be scaled
+num_cols <- c('Customer_Age', 'Dependent_count', 'Months_on_book', 
+              'Total_Relationship_Count', 'Months_Inactive_12_mon', 
+              'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal', 
+              'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1')
+
+# Perform feature scaling
+X_2[num_cols] <- scale(X_2[num_cols])
+
+# Print the modified dataframe
+print(X_2)
+```
+
+```{r, VIF}
+# Assuming X_2 is your dataframe
+model <- lm(Credit_Limit ~ ., data = X_2)  # Replace 'y' with your response variable
+summary(model)
+
+# Identify aliased coefficients (if any)
+aliased_coefs <- which(is.na(coef(model)))
+if (length(aliased_coefs) > 0) {
+  aliased_vars <- names(coef(model))[aliased_coefs]
+  print(paste("Aliased variables:", paste(aliased_vars, collapse = ", ")))
+} else {
+  print("No aliased variables found.")
+}
+
+
+```
+
