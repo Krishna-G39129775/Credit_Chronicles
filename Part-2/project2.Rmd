@@ -49,6 +49,10 @@ X_test <- test_df[, -which(names(test_df) %in% "Attrition_Flag")]
 y_test <- test_df$Attrition_Flag
 ```
 
+
+
+
+
 ```{r}
 # Create a copy of the dataframes
 X_test_copy <- X_test
@@ -59,9 +63,11 @@ y_test_copy <- y_test
 ```{r}
 head(X_test)
 ```
+
 ```{r}
 colnames(train_df)
 ```
+
 ```{r}
 # Select predictors (X) excluding 'CLIENTNUM' and 'Attrition_Flag'
 X <- train_df[, !(names(train_df) %in% c('CLIENTNUM', 'Attrition_Flag'))]
@@ -71,32 +77,22 @@ y <- train_df$Attrition_Flag
 ```
 
 ```{r, onhot}
-# Install and load the necessary package
-if (!require(caret)) {
-  install.packages("caret")
-  library(caret)
-}
 
-# Create a copy of the dataframe
+#Applying one hot encoding for data to be used in logistics regression or knn 
 X_1 <- X
 
-# Define the columns to one-hot encode
-cols_to_encode <- c('Gender', 'Education_Level', 'Marital_Status', 'Income_Category', 'Card_Category')
-
-# Perform one-hot encoding and drop the original columns
-for (i in cols_to_encode) {
-  # Create dummy variables
-  formula <- paste(i, "~ . - 1")
-  tempdf <- model.matrix(as.formula(formula), data=X_1)
-  colnames(tempdf) <- paste(i, colnames(tempdf), sep="_")  # Add prefix to the column names
-  
-  # Concatenate the dummy variables with the original dataframe
+for (i in c('Gender', 'Education_Level', 'Marital_Status', 'Income_Category', 'Card_Category')) {
+  tempdf <- model.matrix(~ . - 1, data = data.frame(X_1[i]))
+  colnames(tempdf) <- gsub(sprintf("^%s", i), "", colnames(tempdf))
   X_1 <- cbind(X_1, tempdf)
-  
-  # Drop the original column
-  X_1 <- X_1[, !names(X_1) %in% i]
+  X_1 <- X_1[, !grepl(i, colnames(X_1))]
 }
 
+head(X_1)
+
+```
+
+```{r}
 # Print the first few rows of the modified dataframe
 head(X_1)
 ```
@@ -105,6 +101,7 @@ head(X_1)
 library(psych)
 describe(X_1)
 ```
+
 ```{r}
 # Create a copy of the dataframe
 X_2 <- X_1
@@ -138,4 +135,252 @@ if (length(aliased_coefs) > 0) {
 
 
 ```
+
+```{r , Vif_continued}
+# Install and load the 'car' package if not already installed
+# install.packages("car")
+names(X_1)[names(X_1) == "High School"] <- "high_school"
+names(X_1)[names(X_1) == "Post-Graduate"] <- "Post_Graduate"
+names(X_1)[names(X_1) == "$120K +"] <- "X120K"
+names(X_1)[names(X_1) == "$40K - $60K"] <- "X40K..X60K."
+names(X_1)[names(X_1) == "$60K - $80K"] <- "X60K..X80K."
+names(X_1)[names(X_1) == "$80K - $120K"] <- "X80K..X120K."
+names(X_1)[names(X_1) == "Less than $40K"] <- "Less_than_X40K."
+library(car)
+
+# Define a function to calculate VIF
+vif_df <- function(X_1) {
+  vif_values <- data.frame(Feature = colnames(X_1), VIF_Factor = numeric(ncol(X_1)))
+  
+  for (i in seq_along(colnames(X_1))) {
+    formula_str <- paste(colnames(X_1)[i], "~ .")
+    lm_model <- lm(as.formula(formula_str), data = X_1)
+    
+    # Check for aliased coefficients
+    if (!is.null(aliased_coefs <- which(is.na(coef(lm_model))))) {
+      aliased_vars <- names(coef(lm_model))[aliased_coefs]
+      cat("Aliased variables in model:", paste(aliased_vars, collapse = ", "), "\n")
+    } else {
+      vif_values$VIF_Factor[i] <- car::vif(lm_model)
+    }
+  }
+  
+  return(vif_values)
+}
+
+# Call the function with your data frame X_1
+result <- vif_df(X_1)
+
+# Print the result
+print(result)
+vif <- vif_df(X_2[num_cols])
+
+# Print the result
+print(vif)
+
+
+
+```
+
+
+```{r}
+#In above evry vif value is zero so i did thts way check it (the values are matching with the kaggle one)
+model <- lm(Credit_Limit ~ ., data = X_2[num_cols])
+ezids::xkablevif(model)
+```
+
+
+
+
+
+```{r}
+vif_cols <- c('Credit_Limit', 'Total_Revolving_Bal', 'Avg_Open_To_Buy')
+X_2 <- X_2[, !(names(X_2) %in% vif_cols)]
+num_cols <- num_cols[!(num_cols %in% vif_cols)]
+X_1 <- X_1[, !(names(X_1) %in% vif_cols)]
+
+
+
+```
+
+
+```{r}
+
+# Install and load the 'ROSE' package if not already installed
+# install.packages("ROSE")
+library(ROSE)
+
+# Assuming 'X_1' is your predictor matrix and 'y' is your response variable
+# Combine 'X_1' and 'y' into a data frame
+df <- data.frame(cbind(y, X_1))
+
+# Perform random oversampling
+oversampled_data <- ovun.sample(y ~ ., data = df, method = "over", p = 0.4, seed = 123)
+
+# Extract oversampled data
+X_1_oversampled <- oversampled_data$data[, -1]  # Exclude the response variable
+y_oversampled <- oversampled_data$data$y
+
+# Now, 'X_1_oversampled' and 'y_oversampled' contain the randomly oversampled data
+
+
+```
+
+
+
+
+```{r}
+# Assuming 'X_1' is your data frame and 'num_cols' is a vector of numeric column names
+# Install and load the 'caret' package if not already installed
+# install.packages("caret")
+library(caret)
+
+# Extract numeric columns for standardization
+numeric_cols <- X_1[, num_cols]
+
+# Standardize numeric columns using the scale function
+scaled_numeric_cols <- scale(numeric_cols)
+
+# Replace the original numeric columns with the standardized values
+X_1[, num_cols] <- scaled_numeric_cols
+
+# Print the modified data frame
+print(X_1)
+
+
+```
+
+
+```{r}
+library(pROC)
+
+# Fit Logistic Regression Model
+LogModel <- glm(Attrition_Flag ~ ., family = "binomial", data = training_reg)
+print(summary(LogModel))
+anova(LogModel, test = "Chisq")
+# Make predictions on the testing set
+log_reg <- predict(LogModel, testing_reg[-1], type = "response")
+threshold <- 0.7  # Adjust the threshold as needed
+y_pred <- ifelse(log_reg > threshold, 2, 1)
+y_pred <- as.numeric(y_pred)
+target <- as.numeric(testing_reg$Attrition_Flag)
+
+
+
+
+
+```
+
+
+```{r}
+
+
+X_test[, num_cols] <- scale(X_test[, num_cols])
+
+# Map target categories in 'y_test' to numerical values using 'target_dict'
+# Replace 'target_dict' with the actual mapping based on your data
+# Create a new factor with desired levels and labels
+# Assuming 'y_test' is your response variable
+
+# Convert 'y_test' to a factor with levels 0 and 1
+y_test <- factor(y_test, levels = c("Existing Customer", "Attrited Customer"))
+
+# Map levels to 0 and 1
+y_test <- as.numeric(y_test) - 1
+
+# Print the modified response variable
+print(y_test)
+
+
+
+
+```
+
+
+
+
+```{r}
+# Assuming 'X_test' is your data frame
+# Assuming 'vif_cols' is a vector of column names to be dropped
+
+# Drop columns specified in 'vif_cols'
+X_test <- X_test[, !(names(X_test) %in% vif_cols)]
+
+# Print the modified data frame
+print(X_test)
+
+
+```
+```{r}
+# Assuming 'lr_model' is your logistic regression model
+# Assuming 'X_test' and 'X_1' are your test and training data frames
+names(X_test)[names(X_test) == "High School"] <- "high_school"
+names(X_test)[names(X_test) == "Post-Graduate"] <- "Post_Graduate"
+names(X_test)[names(X_test) == "$120K +"] <- "X120K"
+names(X_test)[names(X_test) == "$40K - $60K"] <- "X40K..X60K."
+names(X_test)[names(X_test) == "$60K - $80K"] <- "X60K..X80K."
+names(X_test)[names(X_test) == "$80K - $120K"] <- "X80K..X120K."
+names(X_test)[names(X_test) == "Less than $40K"] <- "Less_than_X40K."
+
+# Predict on the test set
+y_test_pred <- predict(lr_model, newdata = X_test, type = "response")
+
+# Predict on the training set
+y_train_pred <- predict(lr_model, newdata = X_1, type = "response")
+
+# Convert probabilities to binary predictions (0 or 1)
+threshold <- 0.5  # Adjust the threshold as needed
+y_test_pred_binary <- as.numeric(y_test_pred > threshold)
+y_train_pred_binary <- as.numeric(y_train_pred > threshold)
+
+# Print the binary predictions
+print(y_test_pred_binary)
+print(y_train_pred_binary)
+
+
+
+```
+
+```{r}
+y_train_pred_binary
+
+```
+
+
+```{r}
+# Install and load the necessary packages if not already installed
+# install.packages("caret")
+#install.packages("yardstick")
+library(caret)
+library(yardstick)
+
+# Assuming 'y' is your true labels and 'y_train_pred_binary' is your predicted labels for the training set
+# Convert 'y_train_pred_binary' to a factor with levels matching 'y'
+y_test<-as.factor(y_test)
+y_test_pred_binary <- as.factor(y_test_pred_binary)
+levels(y_test_pred_binary) <- levels(y_test)
+
+# Calculate accuracy for the training set
+accuracy_value_train <- confusionMatrix(data = y_test_pred_binary, reference = y_test)$overall["Accuracy"]
+print(paste("The accuracy of the model on the training set is:", accuracy_value_train))
+
+# Print the classification report for the training set
+conf_matrix_train <- confusionMatrix(data = y_test_pred_binary, reference = y_test)
+classification_report_train <- confusionMatrix:::print.confusionMatrix(conf_matrix_train, digits = 3)
+print("-----------The classification report for the training set is ----------")
+print(classification_report_train)
+
+
+
+
+```
+```{r}
+length(y_test_pred_binary)
+length(y_test)
+```
+
+
+
+
+
 
