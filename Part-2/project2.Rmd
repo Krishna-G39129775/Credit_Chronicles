@@ -274,38 +274,7 @@ target <- as.numeric(testing_reg$Attrition_Flag)
 
 ```{r}
 
-# Assuming 'X_test' is your test data frame and 'num_cols' is a vector of numeric column names
-# Assuming 'sc_scale' is a scaling function applied to 'num_cols'
-# Assuming 'target_dict' is a dictionary mapping target categories in 'y_test' to numerical values
-# Assuming 'y' is your response variable
-# Assuming 'target_dict' is a named vector or a data frame mapping target categories to numerical values
 
-# Map target categories in 'y' to numerical values using 'target_dict'
-# Replace 'target_dict' with the actual mapping based on your data
-# Install and load the 'dplyr' package if not already installed
-# install.packages("dplyr")
-library(dplyr)
-
-# Assuming 'y' is your response variable
-# Assuming 'target_dict' is a named vector or a data frame mapping target categories to numerical values
-
-
-
-# Create a copy of X_test
-X_test_tree <- X_test
-
-# Drop the 'CLIENTNUM' column
-X_test <- X_test[, !colnames(X_test) %in% c('CLIENTNUM')]
-
-# One-hot encode categorical variables
-for (i in c('Gender', 'Education_Level', 'Marital_Status', 'Income_Category', 'Card_Category')) {
-  tempdf <- model.matrix(~ . - 1, data = data.frame(X_test[i]))
-  colnames(tempdf) <- gsub(sprintf("^%s", i), "", colnames(tempdf))
-  X_test <- cbind(X_test, tempdf)
-  X_test <- X_test[, !grepl(i, colnames(X_test))]
-}
-
-# Standardize numeric columns
 X_test[, num_cols] <- scale(X_test[, num_cols])
 
 # Map target categories in 'y_test' to numerical values using 'target_dict'
