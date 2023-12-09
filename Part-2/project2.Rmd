@@ -262,6 +262,9 @@ anova(LogModel, test = "Chisq")
 log_reg <- predict(LogModel, testing_reg[-1], type = "response")
 threshold <- 0.7  # Adjust the threshold as needed
 y_pred <- ifelse(log_reg > threshold, 2, 1)
+y_pred <- as.numeric(y_pred)
+target <- as.numeric(testing_reg$Attrition_Flag)
+
 
 
 
