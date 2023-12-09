@@ -258,6 +258,10 @@ library(pROC)
 LogModel <- glm(Attrition_Flag ~ ., family = "binomial", data = training_reg)
 print(summary(LogModel))
 anova(LogModel, test = "Chisq")
+# Make predictions on the testing set
+log_reg <- predict(LogModel, testing_reg[-1], type = "response")
+threshold <- 0.7  # Adjust the threshold as needed
+y_pred <- ifelse(log_reg > threshold, 2, 1)
 
 
 
