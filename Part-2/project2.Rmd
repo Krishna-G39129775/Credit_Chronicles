@@ -129,6 +129,47 @@ dim(training_reg); dim(testing_reg)
 ```
 
 ```{r}
+# Fit Random Forest model
+random_forest <- randomForest(Attrition_Flag ~ ., ntree = 500, family = "binomial", data = training_reg)
+
+# Print summary of the random forest model
+print(summary(random_forest))
+print(random_forest)
+
+# Make predictions on the testing set
+rf_pred <- predict(random_forest, testing_reg)
+
+# Calculate confusion matrix
+conf_matrix_rf <- caret::confusionMatrix(rf_pred, testing_reg$Attrition_Flag)
+
+# Extract overall accuracy from confusion matrix
+ran_accuracy <- conf_matrix_rf$overall["Accuracy"]
+cat("Random Forest Accuracy:", ran_accuracy, "\n")
+
+# Print precision, recall, TP, FP, FN, TN
+precision <- conf_matrix_rf$byClass["Precision"]
+recall <- conf_matrix_rf$byClass["Recall"]
+f1_score <- 2 * (precision * recall) / (precision + recall)  # Calculate F1 Score
+tp <- conf_matrix_rf$table[2, 2]
+fp <- conf_matrix_rf$table[1, 2]
+fn <- conf_matrix_rf$table[2, 1]
+tn <- conf_matrix_rf$table[1, 1]
+
+cat("Precision:", precision, "\n")
+cat("Recall:", recall, "\n")
+cat("F1 Score:", f1_score, "\n")  # Print F1 Score
+cat("True Positives:", tp, "\n")
+cat("False Positives:", fp, "\n")
+cat("False Negatives:", fn, "\n")
+cat("True Negatives:", tn, "\n")
+
+
+
+
+```
+
+
+```{r}
 # Install the package if it's not already installed
 if (!require(caTools)) {
   install.packages("caTools")
