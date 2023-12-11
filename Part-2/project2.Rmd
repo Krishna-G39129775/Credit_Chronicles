@@ -104,6 +104,13 @@ ggplot(Credit_card_churn, aes(x=Attrition_Flag,
 Credit_card_churn[sapply(Credit_card_churn, is.character)]<- lapply(Credit_card_churn[sapply(Credit_card_churn, is.character)], as.factor)
 ```
 
+
+```{r}
+str(Credit_card_churn)
+summary(Credit_card_churn)
+```
+
+
 ```{r}
 # Install the package if it's not already installed
 if (!require(caTools)) {
