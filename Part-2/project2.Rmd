@@ -110,6 +110,23 @@ str(Credit_card_churn)
 summary(Credit_card_churn)
 ```
 
+```{r}
+#Splitting the regular dataset
+
+# Assuming you have loaded the necessary data as 'Credit_card_churn'
+
+# Convert all features to categorical data
+Credit_card_churn[sapply(Credit_card_churn, is.character)] <- lapply(Credit_card_churn[sapply(Credit_card_churn, is.character)], as.factor)
+
+# Split the dataset into training and testing sets
+set.seed(123)
+intrain_reg <- createDataPartition(Credit_card_churn$Attrition_Flag, p = 0.80, list = FALSE)
+training_reg <- Credit_card_churn[intrain_reg, ]
+testing_reg <- Credit_card_churn[-intrain_reg, ]
+dim(training_reg); dim(testing_reg)
+#summary(training_reg)
+#summary(testing_reg)
+```
 
 ```{r}
 # Install the package if it's not already installed
