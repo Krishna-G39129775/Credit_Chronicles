@@ -43,6 +43,12 @@ print(head(Credit_card_churn,5))
 ```
 
 ```{r}
+table(Credit_card_churn$Attrition_Flag, Credit_card_churn$Customer_Age)
+table(Credit_card_churn$Attrition_Flag, Credit_card_churn$Gender)
+
+```
+
+```{r}
 # Install the package if it's not already installed
 if (!require(caTools)) {
   install.packages("caTools")
