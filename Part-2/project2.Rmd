@@ -193,6 +193,11 @@ cat("Accuracy:", log_accuracy, "\n")
 # Print confusion matrix
 cat("Confusion Matrix:\n")
 print(conf_matrix$table)
+# Calculate TP, TN, FP, FN
+TP <- conf_matrix$table[2, 2]
+TN <- conf_matrix$table[1, 1]
+FP <- conf_matrix$table[1, 2]
+FN <- conf_matrix$table[2, 1]
 
 
 
