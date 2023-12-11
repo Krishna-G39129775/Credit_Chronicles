@@ -345,15 +345,6 @@ print(vif)
 ```
 
 
-```{r}
-#In above evry vif value is zero so i did thts way check it (the values are matching with the kaggle one)
-model <- lm(Credit_Limit ~ ., data = X_2[num_cols])
-ezids::xkablevif(model)
-```
-
-
-
-
 
 ```{r}
 vif_cols <- c('Credit_Limit', 'Total_Revolving_Bal', 'Avg_Open_To_Buy')
