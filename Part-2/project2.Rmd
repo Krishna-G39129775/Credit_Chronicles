@@ -168,6 +168,31 @@ cat("True Negatives:", tn, "\n")
 
 ```
 
+```{r}
+# Install and load the pROC package
+library(pROC)
+
+# Fit Logistic Regression Model
+LogModel <- glm(Attrition_Flag ~ ., family = "binomial", data = training_reg)
+print(summary(LogModel))
+anova(LogModel, test = "Chisq")
+
+# Make predictions on the testing set
+log_reg <- predict(LogModel, testing_reg[-1], type = "response")
+threshold <- 0.7  # Adjust the threshold as needed
+y_pred <- ifelse(log_reg > threshold, 2, 1)
+y_pred <- as.numeric(y_pred)
+target <- as.numeric(testing_reg$Attrition_Flag)
+
+# Confusion Matrix and Accuracy
+conf_matrix <- caret::confusionMatrix(table(y_pred, target))
+log_accuracy <- conf_matrix$overall["Accuracy"]
+cat("Accuracy:", log_accuracy, "\n")
+
+# Print confusion matrix
+cat("Confusion Matrix:\n")
+print(conf_matrix$table)
+
 
 ```{r}
 # Install the package if it's not already installed
