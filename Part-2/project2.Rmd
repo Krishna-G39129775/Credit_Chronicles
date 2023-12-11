@@ -308,16 +308,7 @@ if (length(aliased_coefs) > 0) {
 ```
 
 ```{r , Vif_continued}
-# Install and load the 'car' package if not already installed
-# install.packages("car")
-names(X_1)[names(X_1) == "High School"] <- "high_school"
-names(X_1)[names(X_1) == "Post-Graduate"] <- "Post_Graduate"
-names(X_1)[names(X_1) == "$120K +"] <- "X120K"
-names(X_1)[names(X_1) == "$40K - $60K"] <- "X40K..X60K."
-names(X_1)[names(X_1) == "$60K - $80K"] <- "X60K..X80K."
-names(X_1)[names(X_1) == "$80K - $120K"] <- "X80K..X120K."
-names(X_1)[names(X_1) == "Less than $40K"] <- "Less_than_X40K."
-library(car)
+
 
 # Define a function to calculate VIF
 vif_df <- function(X_1) {
