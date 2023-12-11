@@ -184,48 +184,7 @@ y_pred <- ifelse(log_reg > threshold, 2, 1)
 y_pred <- as.numeric(y_pred)
 target <- as.numeric(testing_reg$Attrition_Flag)
 
-# Confusion Matrix and Accuracy
-conf_matrix <- caret::confusionMatrix(table(y_pred, target))
-log_accuracy <- conf_matrix$overall["Accuracy"]
-cat("Accuracy:", log_accuracy, "\n")
 
-# Print confusion matrix
-cat("Confusion Matrix:\n")
-print(conf_matrix$table)
-# Calculate TP, TN, FP, FN
-TP <- conf_matrix$table[2, 2]
-TN <- conf_matrix$table[1, 1]
-FP <- conf_matrix$table[1, 2]
-FN <- conf_matrix$table[2, 1]
-
-cat("\nTrue Positives (TP):", TP, "\n")
-cat("True Negatives (TN):", TN, "\n")
-cat("False Positives (FP):", FP, "\n")
-cat("False Negatives (FN):", FN, "\n")
-
-# Calculate Precision, Recall, and F1 Score
-precision <- TP / (TP + FP)
-recall <- TP / (TP + FN)
-f1_score <- 2 * (precision * recall) / (precision + recall)
-
-cat("\nPrecision:", precision, "\n")
-cat("Recall (Sensitivity):", recall, "\n")
-cat("F1 Score:", f1_score, "\n")
-
-# ROC Curve and AUC
-roc_curve <- roc(target, log_reg)
-auc_value <- auc(roc_curve)
-
-# Plot ROC Curve
-plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
-abline(a = 0, b = 1, lty = 2, col = "red")  # Diagonal line for reference
-
-# Display AUC value
-cat("AUC:", auc_value, "\n")
-
-# Calculate accuracy from confusion matrix
-accuracy_from_conf_matrix <- sum(diag(conf_matrix$table)) / sum(conf_matrix$table)
-cat("Accuracy (calculated from Confusion Matrix):", accuracy_from_conf_matrix, "\n")
 
 
 ```
