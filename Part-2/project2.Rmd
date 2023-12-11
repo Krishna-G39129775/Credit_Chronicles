@@ -20,6 +20,11 @@ library(pROC)
 ```
 
 ```{r}
+Credit_card_churn <- read.csv('credit_card1.csv')
+str(Credit_card_churn)
+```
+
+```{r}
 # Load the data
 data <- read.csv('credit_card.csv')
 # Drop specific columns
