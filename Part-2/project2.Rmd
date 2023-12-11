@@ -34,6 +34,15 @@ data$Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_D
 ```
 
 ```{r}
+str(Credit_card_churn)
+summary(Credit_card_churn)
+```
+
+```{r}
+print(head(Credit_card_churn,5))
+```
+
+```{r}
 # Install the package if it's not already installed
 if (!require(caTools)) {
   install.packages("caTools")
