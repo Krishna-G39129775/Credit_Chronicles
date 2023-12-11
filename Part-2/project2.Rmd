@@ -100,6 +100,11 @@ ggplot(Credit_card_churn, aes(x=Attrition_Flag,
 ```
 
 ```{r}
+#Converting all features to categorical data
+Credit_card_churn[sapply(Credit_card_churn, is.character)]<- lapply(Credit_card_churn[sapply(Credit_card_churn, is.character)], as.factor)
+```
+
+```{r}
 # Install the package if it's not already installed
 if (!require(caTools)) {
   install.packages("caTools")
