@@ -190,6 +190,10 @@ conf_matrix <- caret::confusionMatrix(table(y_pred, target))
 log_accuracy <- conf_matrix$overall["Accuracy"]
 cat("Accuracy:", log_accuracy, "\n")
 
+# Print confusion matrix
+cat("Confusion Matrix:\n")
+print(conf_matrix$table)
+
 
 
 
