@@ -20,11 +20,187 @@ library(pROC)
 ```
 
 ```{r}
+Credit_card_churn <- read.csv('credit_card1.csv')
+str(Credit_card_churn)
+```
+
+```{r}
 # Load the data
 data <- read.csv('credit_card.csv')
 # Drop specific columns
 data$Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1 <- NULL
 data$Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2 <- NULL
+
+```
+
+```{r}
+str(Credit_card_churn)
+summary(Credit_card_churn)
+```
+
+```{r}
+print(head(Credit_card_churn,5))
+```
+
+```{r}
+table(Credit_card_churn$Attrition_Flag, Credit_card_churn$Customer_Age)
+table(Credit_card_churn$Attrition_Flag, Credit_card_churn$Gender)
+
+```
+
+```{r}
+ggplot(Credit_card_churn, aes(x=Attrition_Flag,
+                  y= prop.table(stat(count)),
+                  fill= factor(Gender),
+                  label= scales::percent(prop.table(stat(count))))) +
+  geom_bar(position = position_dodge())+
+  geom_text(stat="count",
+            position = position_dodge(.9),
+            vjust= -0.5, size=3)+
+  scale_y_continuous(labels = scales::percent)+
+  labs(title = "Attrition by Gender",
+       x= "Attrition status",
+       y="Count")+
+  theme_classic()+
+  scale_fill_discrete(
+    name="Gender",
+    breaks=c("M", "F"),
+    labels=c("Male", "Female" )
+  )
+
+ggplot(Credit_card_churn, aes(x=Attrition_Flag,
+                  y= prop.table(stat(count)),
+                  fill= factor(Card_Category),
+                  label= scales::percent(prop.table(stat(count))))) +
+  geom_bar(position = position_dodge())+
+  geom_text(stat="count",
+            position = position_dodge(.9),
+            vjust= -0.5, size=3)+
+  scale_y_continuous(labels = scales::percent)+
+  labs(title = "Attrition by Card Category",
+       x= "Attrition status",
+       y="Count")+
+  theme_classic()
+
+ggplot(Credit_card_churn, aes(x=Attrition_Flag,
+                  y= prop.table(stat(count)),
+                  fill= factor(Income_Category),
+                  label= scales::percent(prop.table(stat(count))))) +
+  geom_bar(position = position_dodge())+
+  geom_text(stat="count",
+            position = position_dodge(.9),
+            vjust= -0.5, size=3)+
+  scale_y_continuous(labels = scales::percent)+
+  labs(title = "Attrition by Income Category",
+       x= "Attrition status",
+       y="Count")+
+  theme_classic()
+
+
+```
+
+```{r}
+#Converting all features to categorical data
+Credit_card_churn[sapply(Credit_card_churn, is.character)]<- lapply(Credit_card_churn[sapply(Credit_card_churn, is.character)], as.factor)
+```
+
+
+```{r}
+str(Credit_card_churn)
+summary(Credit_card_churn)
+```
+
+```{r}
+#Splitting the regular dataset
+
+# Assuming you have loaded the necessary data as 'Credit_card_churn'
+
+# Convert all features to categorical data
+Credit_card_churn[sapply(Credit_card_churn, is.character)] <- lapply(Credit_card_churn[sapply(Credit_card_churn, is.character)], as.factor)
+
+# Split the dataset into training and testing sets
+set.seed(123)
+intrain_reg <- createDataPartition(Credit_card_churn$Attrition_Flag, p = 0.80, list = FALSE)
+training_reg <- Credit_card_churn[intrain_reg, ]
+testing_reg <- Credit_card_churn[-intrain_reg, ]
+dim(training_reg); dim(testing_reg)
+#summary(training_reg)
+#summary(testing_reg)
+```
+
+```{r}
+# Fit Random Forest model
+random_forest <- randomForest(Attrition_Flag ~ ., ntree = 500, family = "binomial", data = training_reg)
+
+# Print summary of the random forest model
+print(summary(random_forest))
+print(random_forest)
+
+# Make predictions on the testing set
+rf_pred <- predict(random_forest, testing_reg)
+
+# Calculate confusion matrix
+conf_matrix_rf <- caret::confusionMatrix(rf_pred, testing_reg$Attrition_Flag)
+
+# Extract overall accuracy from confusion matrix
+ran_accuracy <- conf_matrix_rf$overall["Accuracy"]
+cat("Random Forest Accuracy:", ran_accuracy, "\n")
+
+# Print precision, recall, TP, FP, FN, TN
+precision <- conf_matrix_rf$byClass["Precision"]
+recall <- conf_matrix_rf$byClass["Recall"]
+f1_score <- 2 * (precision * recall) / (precision + recall)  # Calculate F1 Score
+tp <- conf_matrix_rf$table[2, 2]
+fp <- conf_matrix_rf$table[1, 2]
+fn <- conf_matrix_rf$table[2, 1]
+tn <- conf_matrix_rf$table[1, 1]
+
+cat("Precision:", precision, "\n")
+cat("Recall:", recall, "\n")
+cat("F1 Score:", f1_score, "\n")  # Print F1 Score
+cat("True Positives:", tp, "\n")
+cat("False Positives:", fp, "\n")
+cat("False Negatives:", fn, "\n")
+cat("True Negatives:", tn, "\n")
+
+
+
+
+```
+
+```{r}
+# Install and load the pROC package
+library(pROC)
+
+# Fit Logistic Regression Model
+LogModel <- glm(Attrition_Flag ~ ., family = "binomial", data = training_reg)
+print(summary(LogModel))
+anova(LogModel, test = "Chisq")
+
+# Make predictions on the testing set
+log_reg <- predict(LogModel, testing_reg[-1], type = "response")
+threshold <- 0.7  # Adjust the threshold as needed
+y_pred <- ifelse(log_reg > threshold, 2, 1)
+y_pred <- as.numeric(y_pred)
+target <- as.numeric(testing_reg$Attrition_Flag)
+target <- as.numeric(testing_reg$Attrition_Flag)
+
+# Confusion Matrix and Accuracy
+conf_matrix <- caret::confusionMatrix(table(y_pred, target))
+log_accuracy <- conf_matrix$overall["Accuracy"]
+cat("Accuracy:", log_accuracy, "\n")
+
+# Print confusion matrix
+cat("Confusion Matrix:\n")
+print(conf_matrix$table)
+# Calculate TP, TN, FP, FN
+TP <- conf_matrix$table[2, 2]
+TN <- conf_matrix$table[1, 1]
+FP <- conf_matrix$table[1, 2]
+FN <- conf_matrix$table[2, 1]
+
+
+
 
 ```
 
@@ -137,16 +313,7 @@ if (length(aliased_coefs) > 0) {
 ```
 
 ```{r , Vif_continued}
-# Install and load the 'car' package if not already installed
-# install.packages("car")
-names(X_1)[names(X_1) == "High School"] <- "high_school"
-names(X_1)[names(X_1) == "Post-Graduate"] <- "Post_Graduate"
-names(X_1)[names(X_1) == "$120K +"] <- "X120K"
-names(X_1)[names(X_1) == "$40K - $60K"] <- "X40K..X60K."
-names(X_1)[names(X_1) == "$60K - $80K"] <- "X60K..X80K."
-names(X_1)[names(X_1) == "$80K - $120K"] <- "X80K..X120K."
-names(X_1)[names(X_1) == "Less than $40K"] <- "Less_than_X40K."
-library(car)
+
 
 # Define a function to calculate VIF
 vif_df <- function(X_1) {
@@ -181,15 +348,6 @@ print(vif)
 
 
 ```
-
-
-```{r}
-#In above evry vif value is zero so i did thts way check it (the values are matching with the kaggle one)
-model <- lm(Credit_Limit ~ ., data = X_2[num_cols])
-ezids::xkablevif(model)
-```
-
-
 
 
 
