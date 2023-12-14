@@ -385,6 +385,32 @@ TP <- conf_matrix$table[2, 2]
 TN <- conf_matrix$table[1, 1]
 FP <- conf_matrix$table[1, 2]
 FN <- conf_matrix$table[2, 1]
+# Print TP, TN, FP, FN
+cat("True Positives (TP):", TP, "\n")
+cat("True Negatives (TN):", TN, "\n")
+cat("False Positives (FP):", FP, "\n")
+cat("False Negatives (FN):", FN, "\n")
+
+# Calculate and print Precision, Recall, and F1 Score
+precision <- conf_matrix_dt$byClass["Precision"]
+recall <- conf_matrix_dt$byClass["Sensitivity"]  # Recall is also known as Sensitivity
+f1_score <- 2 * (precision * recall) / (precision + recall)
+# ROC Curve and AUC
+roc_curve <- roc(target, log_reg)
+auc_value <- auc(roc_curve)
+
+# Plot ROC Curve
+plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
+abline(a = 0, b = 1, lty = 2, col = "red")  # Diagonal line for reference
+
+# Display AUC value
+cat("AUC:", auc_value, "\n")
+
+# Calculate accuracy from confusion matrix
+accuracy_from_conf_matrix <- sum(diag(conf_matrix$table)) / sum(conf_matrix$table)
+cat("Accuracy (calculated from Confusion Matrix):", accuracy_from_conf_matrix, "\n")
+
+
 
 
 
