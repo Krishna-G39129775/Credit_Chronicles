@@ -198,6 +198,16 @@ TP <- conf_matrix$table[2, 2]
 TN <- conf_matrix$table[1, 1]
 FP <- conf_matrix$table[1, 2]
 FN <- conf_matrix$table[2, 1]
+# Print TP, TN, FP, FN
+cat("True Positives (TP):", TP, "\n")
+cat("True Negatives (TN):", TN, "\n")
+cat("False Positives (FP):", FP, "\n")
+cat("False Negatives (FN):", FN, "\n")
+
+# Calculate and print Precision, Recall, and F1 Score
+precision <- conf_matrix_dt$byClass["Precision"]
+recall <- conf_matrix_dt$byClass["Sensitivity"]  # Recall is also known as Sensitivity
+f1_score <- 2 * (precision * recall) / (precision + recall)
 
 
 
